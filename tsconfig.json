@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "allowUnreachableCode": false,
+    "declaration": true,
+    "declarationDir": "dist/typings",
+    "experimentalDecorators": true,
+    "lib": [
+      "es6",
+      "dom",
+      "es2017.object"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "pretty": true,
+    "removeComments": false,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "noStrictGenericChecks": true,
+    "target": "es5",
+    "outDir": "dist"
+  },
+  "include": [
+    "src/index.ts",
+    "src/redux/index.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
+}

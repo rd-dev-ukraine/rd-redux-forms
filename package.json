@@ -1,0 +1,28 @@
+{
+  "name": "rd-redux-forms",
+  "version": "0.0.1",
+  "private": false,
+  "description": "HTML forms for react and redux",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rd-dev-ukraine/rd-redux-forms.git"
+  },
+  "author": "rd-dev",
+  "license": "MIT",
+  "types": "dist/typings/index.d.ts",
+  "dependencies": {
+    "redux": "^3.7.2"
+  },
+  "devDependencies": {
+    "@types/redux": "^3.6.0",
+    "@types/react": "^16.0.5",
+    "typescript": "^2.4.2"
+  },
+  "peerDependencies": {
+    "react": "^15.6.1"
+  }
+}
