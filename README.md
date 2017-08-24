@@ -127,7 +127,9 @@ Easy integrate external validators.
     Usually value is formatted when user ends editing and leaves the field.
     Only parsed values will be formatted, if value can't be parsed it remains unchanged as user enters it.
     NOTE: formatted value must be correctly parsed, otherwise further editing may require extra actions to get a valid value.
-    
+  * **unformatter** - optional function converts a value into a form convenient for editing.
+    Usually value is unformatted when user activates a field.
+    It may removes extra chars so less actions required for editing.
      
 
 # Structure
