@@ -34,7 +34,8 @@ export interface FieldSelectorResult {
     parsedValue?: any;
     /**
      * Formatted value. Defined only if value was successfully parsed.
-     * Avoid displaying this value in input, value in the 'value' field will be automatically formatted at specified conditions.
+     * Avoid displaying this value in input,
+     * value in the 'value' field will be automatically formatted at specified conditions.
      */
     formattedValue?: string;
     errors?: string[];

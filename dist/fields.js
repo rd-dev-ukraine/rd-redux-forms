@@ -1,6 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fields = {
+    any: function () { return ({
+        formatter: function (input) { return input; },
+        parser: function (input) { return input === undefined ? null : input; }
+    }); },
+    float: function (digits, required) {
+        if (digits === void 0) { digits = 2; }
+        if (required === void 0) { required = true; }
+        return ({
+            parser: exports.fields.int(required).parser,
+            formatter: function (input) {
+                if (input === null || input === undefined) {
+                    return "";
+                }
+                return input.toFixed(digits);
+            }
+        });
+    },
     int: function (required) {
         if (required === void 0) { required = true; }
         return ({
@@ -21,19 +38,6 @@ exports.fields = {
             }
         });
     },
-    float: function (digits, required) {
-        if (digits === void 0) { digits = 2; }
-        if (required === void 0) { required = true; }
-        return ({
-            parser: exports.fields.int(required).parser,
-            formatter: function (input) {
-                if (input === null || input === undefined) {
-                    return "";
-                }
-                return input.toFixed(digits);
-            }
-        });
-    },
     string: function (required) {
         if (required === void 0) { required = true; }
         return ({
@@ -47,10 +51,6 @@ exports.fields = {
             },
             formatter: function (input) { return (input || "").trim(); },
         });
-    },
-    any: function () { return ({
-        parser: function (input) { return input === undefined ? null : input; },
-        formatter: function (input) { return input; }
-    }); }
+    }
 };
 //# sourceMappingURL=fields.js.map

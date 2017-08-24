@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import { FormActions, FormConfiguration, RdReduxForm, RdReduxFormConnect, RdReduxFormState, FormSelectorResult } from "../api";
+import { FormActions, FormConfiguration, FormSelectorResult, RdReduxForm, RdReduxFormConnect, RdReduxFormState } from "../api";
 export declare type FieldTypedHash<T, F> = {
     [P in keyof T]: F;
 };
@@ -14,6 +14,6 @@ export declare class RdReduxFormImpl<TFields, TMeta = undefined> implements RdRe
     };
     constructor(title: string, config: FormConfiguration<TFields, TMeta>);
     reducer<TState extends RdReduxFormState<TFields>>(state: TState, action: Action): TState;
-    selector(state: RdReduxFormState<TFields>, ...initialData: Partial<TFields>[]): FormSelectorResult<TFields>;
+    selector(state: RdReduxFormState<TFields>, ...initialData: Array<Partial<TFields>>): FormSelectorResult<TFields>;
     private createConnect();
 }

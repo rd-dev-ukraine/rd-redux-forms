@@ -1,6 +1,5 @@
 import { Dispatch } from "redux";
 
-
 export interface FormErrors<T> {
     message?: string[];
 
@@ -47,7 +46,8 @@ export interface FieldSelectorResult {
 
     /**
      * Formatted value. Defined only if value was successfully parsed.
-     * Avoid displaying this value in input, value in the 'value' field will be automatically formatted at specified conditions.
+     * Avoid displaying this value in input,
+     * value in the 'value' field will be automatically formatted at specified conditions.
      */
     formattedValue?: string;
 
@@ -58,7 +58,8 @@ export interface FieldSelectorResult {
 
 export type FieldVisualState = "none" | "valid" | "invalid";
 
-export type RdReduxFormEventsBindingFactory<TFields, TMeta = undefined> = (dispatch: Dispatch<any>, meta?: TMeta) => RdReduxFormEvents<TFields>;
+export type RdReduxFormEventsBindingFactory<TFields, TMeta = undefined> =
+    (dispatch: Dispatch<any>, meta?: TMeta) => RdReduxFormEvents<TFields>;
 
 export interface RdReduxFormEvents<TFields> {
     $events: {

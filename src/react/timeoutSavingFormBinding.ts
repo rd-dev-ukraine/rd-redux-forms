@@ -7,7 +7,6 @@ import {
     RdReduxFormBindingFactory
 } from "../index";
 
-
 export const timeoutSavingFormBinding = (): RdReduxFormBindingFactory<any, any> =>
     (config: FormConfiguration<any>, actions: FormActions<any>) =>
         (dispatch: Dispatch<Action>, meta: any) => {
@@ -15,13 +14,6 @@ export const timeoutSavingFormBinding = (): RdReduxFormBindingFactory<any, any> 
 
             return ({
                 $events: {
-                    form: {
-                        onChangeImmediately: (fieldName: string, value: any): void => {
-                            dispatch(actions.fieldEdit(fieldName, value, meta));
-                            dispatch(actions.fieldFormat(fieldName, meta));
-                            dispatch(actions.validate(meta));
-                        },
-                    },
                     fields: Object.keys(config.fields).reduce((result: any, fieldName) => {
                         result[fieldName] = {
                             onChange(e: FormEvent<HTMLInputElement> | null, value: any): void {
@@ -39,6 +31,13 @@ export const timeoutSavingFormBinding = (): RdReduxFormBindingFactory<any, any> 
 
                         return result;
                     }, {}),
+                    form: {
+                        onChangeImmediately: (fieldName: string, value: any): void => {
+                            dispatch(actions.fieldEdit(fieldName, value, meta));
+                            dispatch(actions.fieldFormat(fieldName, meta));
+                            dispatch(actions.validate(meta));
+                        },
+                    }
                 }
             });
         };

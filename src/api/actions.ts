@@ -2,7 +2,6 @@ import { Action } from "redux";
 
 import { FormErrors } from "./common";
 
-
 /** TMeta is some custom metadata passed with each action but not saved in store. */
 export interface FormActions<TFields, TMeta = undefined> {
     setData(data: Partial<TFields>, resetState?: boolean, meta?: TMeta): FormSetDataAction<TFields, TMeta>;

@@ -10,7 +10,7 @@ export interface RdReduxForm<TFields, TMeta = undefined> {
      * @param initialData Values of fields for which there were no user input.
      * @returns An object contains all information about form input.
      */
-    selector: (state: RdReduxFormState<TFields>, ...initialData: Partial<TFields>[]) => FormSelectorResult<TFields>;
+    selector: (state: RdReduxFormState<TFields>, ...initialData: Array<Partial<TFields>>) => FormSelectorResult<TFields>;
     connect: RdReduxFormConnect<TFields, TMeta>;
     state: {
         empty(): RdReduxFormState<TFields>;

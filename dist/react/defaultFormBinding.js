@@ -4,12 +4,6 @@ exports.defaultFormBinding = function () {
     return function (config, actions) {
         return function (dispatch, meta) { return ({
             $events: {
-                form: {
-                    onSubmit: function (e) {
-                        e.preventDefault();
-                        dispatch(actions.validate(meta));
-                    }
-                },
                 fields: Object.keys(config.fields).reduce(function (result, fieldName) {
                     result[fieldName] = {
                         onChange: function (e, value) {
@@ -20,7 +14,13 @@ exports.defaultFormBinding = function () {
                         }
                     };
                     return result;
-                }, {})
+                }, {}),
+                form: {
+                    onSubmit: function (e) {
+                        e.preventDefault();
+                        dispatch(actions.validate(meta));
+                    }
+                }
             }
         }); };
     };

@@ -2,10 +2,11 @@ import { RdReduxFormImpl } from "./runtime/RdReduxForm";
 
 import { FormConfiguration, RdReduxForm } from "./api";
 
-
 const existingForms = new Set<string>();
 
-export function createForm<TFields, TMeta = undefined>(title: string, config: FormConfiguration<TFields, TMeta>): RdReduxForm<TFields, TMeta> {
+export function createForm<TFields, TMeta = undefined>(
+    title: string,
+    config: FormConfiguration<TFields, TMeta>): RdReduxForm<TFields, TMeta> {
     if (!config) {
         throw new Error("Form configuration is missing.");
     }
