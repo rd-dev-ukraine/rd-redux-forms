@@ -1,5 +1,4 @@
 import { Action } from "redux";
-
 import {
     FieldConfiguration,
     FieldSelectorResult,
