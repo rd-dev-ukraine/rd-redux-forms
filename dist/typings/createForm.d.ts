@@ -1,2 +1,2 @@
-import { FormConfiguration, RdReduxForm } from "./api";
-export declare function createForm<TFields, TMeta = undefined>(title: string, config: FormConfiguration<TFields, TMeta>): RdReduxForm<TFields, TMeta>;
+import { FormFieldsConfiguration, RdReduxForm } from "./api";
+export declare function createForm<TFields, TMeta = undefined>(title: string, fields: FormFieldsConfiguration<TFields>): RdReduxForm<TFields, TMeta>;

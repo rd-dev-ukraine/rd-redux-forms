@@ -1,34 +1,29 @@
 import { Action } from "redux";
 import {
-    FieldConfiguration,
-    FieldSelectorResult,
+    FieldInfo,
     FormActions,
-    FormConfiguration,
-    FormSelectorResult,
+    FormFieldsConfiguration,
+    InvalidFormSelectorResult,
+    NonParsedFieldInfo,
+    ParsedFieldWithCustomErrorInfo,
     RdReduxForm,
-    RdReduxFormConnect,
-    RdReduxFormState
+    ReduxFormState,
+    ValidFieldInfo,
+    ValidFormSelectorResult
 } from "../api";
-import { entries, isNullOrEmptyArray } from "../utils";
+
 import { FormActionsImpl } from "./FormActionsImpl";
 
-interface FieldHash<T> {
-    [field: string]: T;
-}
-
-export type FieldTypedHash<T, F> = {
-    [P in keyof T]: F;
-};
+const DEFAULT_PARSE_ERROR = "Value is not valid.";
 
 export class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<TFields, TMeta> {
 
     actions: FormActions<TFields, TMeta> = new FormActionsImpl<TFields, TMeta>(this.title);
-    connect: RdReduxFormConnect<TFields, TMeta> = this.createConnect();
     state = {
         /**
          * Gets the state for the form without data.
          */
-        empty(): RdReduxFormState<TFields> {
+        empty(): ReduxFormState<TFields> {
             return {
                 fields: {} as any,
                 formatted: new Set<string>(),
@@ -41,7 +36,7 @@ export class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<
          * Gets the state for the form with data.
          * Do the same thing as dispatching setData action with resetting, but can be used in reducer.
          */
-        withData(data: TFields): RdReduxFormState<TFields> {
+        withData(data: TFields): ReduxFormState<TFields> {
             return {
                 errors: undefined,
                 fields: data,
@@ -52,17 +47,17 @@ export class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<
         }
     };
 
-    constructor(private title: string, private config: FormConfiguration<TFields, TMeta>) {
+    constructor(private title: string, private fieldConfiguration: FormFieldsConfiguration<TFields>) {
         if (!title) {
             throw new Error("Form title is not defined.");
         }
 
-        if (!config) {
-            throw new Error("Form configuraion is not defined.");
+        if (!fieldConfiguration) {
+            throw new Error("Form field configuraion is not defined.");
         }
     }
 
-    reducer<TState extends RdReduxFormState<TFields>>(state: TState, action: Action): TState {
+    reducer<TState extends ReduxFormState<TFields>>(state: TState, action: Action): TState {
         state = state || this.state.empty();
 
         if (this.actions.isSetData(action)) {
@@ -126,97 +121,124 @@ export class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<
         return state;
     }
 
-    selector(state: RdReduxFormState<TFields>, ...initialData: Array<Partial<TFields>>): FormSelectorResult<TFields> {
+    selector(
+        state: ReduxFormState<TFields>,
+        ...initialData: Array<Partial<TFields>>):
+        ValidFormSelectorResult<TFields> | InvalidFormSelectorResult<TFields> {
+
         state = state || this.state.empty();
 
         const initialValues: Partial<TFields> = Object.assign({}, ...[...initialData, state.fields]);
 
-        const parsedFields = entries<FieldConfiguration<any>>(this.config.fields)
-            .reduce<FieldHash<FieldSelectorResult>>((result, [field, config]) => {
-                const parser = config.parser || ((v) => v);
-                const formatter = config.formatter ||
-                    ((v) => (v === null || v === undefined || isNaN(v)) ? "" : "" + v);
+        const fields: Array<[string, FieldInfo]> =
+            Object.keys(this.fieldConfiguration)
+                .map<[string, FieldInfo]>((fieldName) => {
+                    const fieldConfig = this.fieldConfiguration[fieldName];
 
-                const rawValue = initialValues[field] as any;
-                const parsedValue = parser(rawValue);
+                    const parser = fieldConfig.parser || ((v) => v);
+                    const formatter = fieldConfig.formatter ||
+                        ((v: any) => (v === null || v === undefined || isNaN(v)) ? "" : "" + v);
 
-                if (parsedValue === undefined) {
-                    result[field] = {
-                        errors: [config.parseError || "Value is not valid."],
-                        formattedValue: rawValue,
-                        isParsed: false,
-                        value: rawValue || "",
-                        visualState: "none"
-                    };
-                } else {
-                    result[field] = {
-                        formattedValue: formatter(parsedValue),
-                        isParsed: true,
-                        parsedValue,
-                        value: rawValue || "",
-                        visualState: "none"
-                    };
-                }
+                    const rawValue = initialValues[fieldName] as any;
+                    const parsedValue = parser(rawValue);
 
-                return result;
-            }, {});
+                    const customErrors = !!state.errors &&
+                        !!state.errors.fields &&
+                        !!state.errors.fields[fieldName] &&
+                        !!(state.errors.fields[fieldName] as any[]).length
+                        ? state.errors.fields[fieldName]
+                        : undefined;
 
-        const isAllParsed = entries<FieldSelectorResult>(parsedFields).every(([_, info]) => info.isParsed);
-
-        const data = entries<FieldSelectorResult>(parsedFields)
-            .filter(([_, val]) => val.isParsed)
-            .reduce<TFields>((result: any, [name, val]) => {
-                result[name] = val.parsedValue;
-                return result;
-            }, {} as TFields);
-
-        const hasExtraErrors = state.errors &&
-            (
-                !isNullOrEmptyArray(state.errors.message) ||
-                (state.errors.fields &&
-                    entries<string[]>(state.errors.fields).some(([_, err]) => !isNullOrEmptyArray(err)))
-            );
-
-        return {
-            data: isAllParsed ? data : undefined,
-            fields: entries<FieldSelectorResult>(parsedFields)
-                .reduce<FieldTypedHash<TFields, FieldSelectorResult>>((result, [name, val]) => {
-                    const error = val.isParsed
-                        ? state.errors && state.errors.fields && !isNullOrEmptyArray(state.errors.fields[name])
-                            ? state.errors.fields[name]
-                            : undefined
-                        : val.errors;
-                    const hasError = !val.isParsed || !isNullOrEmptyArray(error);
-
-                    const showErrors = (!val.isParsed && state.formatted.has(name)) ||
+                    const showErrors = state.formatted.has(name) ||
                         (state.validated && !state.touched.has(name));
 
-                    result[name] = {
-                        errors: hasError ? error : undefined,
-                        formattedValue: val.formattedValue,
-                        isParsed: val.isParsed,
-                        parsedValue: val.parsedValue,
-                        value: val.value,
-                        visualState: showErrors
-                            ? (hasError ? "invalid" : "valid")
-                            : "none"
-                    };
+                    // Non parsed field info
+                    if (parsedValue === undefined) {
 
+                        const field: NonParsedFieldInfo = {
+                            errors: {
+                                customErrors,
+                                errors: [
+                                    fieldConfig.parseError || DEFAULT_PARSE_ERROR,
+                                    ...(customErrors || [])
+                                ],
+                                hasCustomErrors: customErrors !== undefined,
+                                hasParseError: true,
+                                parseError: fieldConfig.parseError || DEFAULT_PARSE_ERROR
+                            },
+                            hasErrors: true,
+                            isParsed: false,
+                            value: rawValue,
+                            visualState: showErrors ? "invalid" : "none"
+                        };
+
+                        return [fieldName, field];
+
+                    } else {
+                        // Parsed field with custom errors
+                        if (customErrors) {
+                            const field: ParsedFieldWithCustomErrorInfo = {
+                                errors: {
+                                    customErrors,
+                                    errors: customErrors,
+                                    hasCustomErrors: true
+                                },
+                                formattedValue: formatter(parsedValue),
+                                hasErrors: true,
+                                isParsed: true,
+                                parsedValue,
+                                value: rawValue,
+                                visualState: showErrors ? "invalid" : "none"
+                            };
+
+                            return [fieldName, field];
+
+                        } else {
+                            // Valid field info
+                            const field: ValidFieldInfo = {
+                                formattedValue: formatter(parsedValue),
+                                hasErrors: false,
+                                isParsed: true,
+                                parsedValue,
+                                value: rawValue,
+                                visualState: showErrors ? "valid" : "none"
+                            };
+
+                            return [fieldName, field];
+                        }
+                    }
+                });
+
+        const isFormValid = fields.every(([_, field]) => !field.hasErrors);
+        const hasFormError = state.errors && state.errors.message && state.errors.message.length;
+
+        if (!isFormValid || hasFormError) {
+            const formInfo: InvalidFormSelectorResult<TFields> = {
+                fields: fields.reduce<any>((result: any, [fieldName, field]) => {
+                    result[fieldName] = field;
                     return result;
-                }, {} as any),
-            formError: state.errors ? state.errors.message : undefined,
-            isValid: (isAllParsed && !hasExtraErrors) || !!state.touched.size
-        };
-    }
+                }, {}),
+                formError: (hasFormError && state.errors) ? state.errors.message : undefined,
+                isValid: false,
+            };
 
-    private createConnect(): RdReduxFormConnect<TFields, TMeta> {
-        const self = this;
+            return formInfo;
+        } else {
+            const formInfo: ValidFormSelectorResult<TFields> = {
+                data: fields.reduce<any>((result: any, [fieldName, field]) => {
+                    if (field.isParsed) {
+                        result[fieldName] = field.parsedValue;
+                    }
+                    return result;
+                }, {}),
+                fields: fields.reduce<any>((result: any, [fieldName, field]) => {
+                    result[fieldName] = field;
+                    return result;
+                }, {}),
+                isValid: true,
+            };
 
-        const result = {
-            dispatch: this.config.dispatch(this.config, this.actions),
-            stateToFields: (state: RdReduxFormState<TFields>) => self.selector(state)
-        };
-
-        return result;
+            return formInfo;
+        }
     }
 }

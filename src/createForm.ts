@@ -1,23 +1,19 @@
 import { RdReduxFormImpl } from "./runtime/RdReduxForm";
 
-import { FormConfiguration, RdReduxForm } from "./api";
+import { FormFieldsConfiguration, RdReduxForm } from "./api";
 
 const existingForms = new Set<string>();
 
 export function createForm<TFields, TMeta = undefined>(
     title: string,
-    config: FormConfiguration<TFields, TMeta>): RdReduxForm<TFields, TMeta> {
-    if (!config) {
-        throw new Error("Form configuration is missing.");
-    }
-
-    if (!config.fields || !Object.keys(config.fields).length) {
-        throw new Error("Form fields is missing.");
+    fields: FormFieldsConfiguration<TFields>): RdReduxForm<TFields, TMeta> {
+    if (!fields) {
+        throw new Error("Form fields configuration is missing.");
     }
 
     title = uniqueFormTitle(title);
 
-    return new RdReduxFormImpl<TFields, TMeta>(title, config);
+    return new RdReduxFormImpl<TFields, TMeta>(title, fields);
 }
 
 function uniqueFormTitle(title: string): string {

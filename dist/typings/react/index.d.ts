@@ -1,2 +1,1 @@
-export * from "./defaultFormBinding";
-export * from "./timeoutSavingFormBinding";
+export declare const dummy: null;

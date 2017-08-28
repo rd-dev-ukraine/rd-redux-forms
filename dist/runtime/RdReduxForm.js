@@ -8,14 +8,13 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = require("../utils");
 var FormActionsImpl_1 = require("./FormActionsImpl");
+var DEFAULT_PARSE_ERROR = "Value is not valid.";
 var RdReduxFormImpl = (function () {
-    function RdReduxFormImpl(title, config) {
+    function RdReduxFormImpl(title, fieldConfiguration) {
         this.title = title;
-        this.config = config;
+        this.fieldConfiguration = fieldConfiguration;
         this.actions = new FormActionsImpl_1.FormActionsImpl(this.title);
-        this.connect = this.createConnect();
         this.state = {
             /**
              * Gets the state for the form without data.
@@ -45,8 +44,8 @@ var RdReduxFormImpl = (function () {
         if (!title) {
             throw new Error("Form title is not defined.");
         }
-        if (!config) {
-            throw new Error("Form configuraion is not defined.");
+        if (!fieldConfiguration) {
+            throw new Error("Form field configuraion is not defined.");
         }
     }
     RdReduxFormImpl.prototype.reducer = function (state, action) {
@@ -74,97 +73,115 @@ var RdReduxFormImpl = (function () {
         var _a;
     };
     RdReduxFormImpl.prototype.selector = function (state) {
+        var _this = this;
         var initialData = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             initialData[_i - 1] = arguments[_i];
         }
         state = state || this.state.empty();
         var initialValues = Object.assign.apply(Object, [{}].concat(initialData.concat([state.fields])));
-        var parsedFields = utils_1.entries(this.config.fields)
-            .reduce(function (result, _a) {
-            var field = _a[0], config = _a[1];
-            var parser = config.parser || (function (v) { return v; });
-            var formatter = config.formatter ||
+        var fields = Object.keys(this.fieldConfiguration)
+            .map(function (fieldName) {
+            var fieldConfig = _this.fieldConfiguration[fieldName];
+            var parser = fieldConfig.parser || (function (v) { return v; });
+            var formatter = fieldConfig.formatter ||
                 (function (v) { return (v === null || v === undefined || isNaN(v)) ? "" : "" + v; });
-            var rawValue = initialValues[field];
+            var rawValue = initialValues[fieldName];
             var parsedValue = parser(rawValue);
+            var customErrors = !!state.errors &&
+                !!state.errors.fields &&
+                !!state.errors.fields[fieldName] &&
+                !!state.errors.fields[fieldName].length
+                ? state.errors.fields[fieldName]
+                : undefined;
+            var showErrors = state.formatted.has(name) ||
+                (state.validated && !state.touched.has(name));
+            // Non parsed field info
             if (parsedValue === undefined) {
-                result[field] = {
-                    errors: [config.parseError || "Value is not valid."],
-                    formattedValue: rawValue,
+                var field = {
+                    errors: {
+                        customErrors: customErrors,
+                        errors: [
+                            fieldConfig.parseError || DEFAULT_PARSE_ERROR
+                        ].concat((customErrors || [])),
+                        hasCustomErrors: customErrors !== undefined,
+                        hasParseError: true,
+                        parseError: fieldConfig.parseError || DEFAULT_PARSE_ERROR
+                    },
+                    hasErrors: true,
                     isParsed: false,
-                    value: rawValue || "",
-                    visualState: "none"
+                    value: rawValue,
+                    visualState: showErrors ? "invalid" : "none"
                 };
+                return [fieldName, field];
             }
             else {
-                result[field] = {
-                    formattedValue: formatter(parsedValue),
-                    isParsed: true,
-                    parsedValue: parsedValue,
-                    value: rawValue || "",
-                    visualState: "none"
-                };
+                // Parsed field with custom errors
+                if (customErrors) {
+                    var field = {
+                        errors: {
+                            customErrors: customErrors,
+                            errors: customErrors,
+                            hasCustomErrors: true
+                        },
+                        formattedValue: formatter(parsedValue),
+                        hasErrors: true,
+                        isParsed: true,
+                        parsedValue: parsedValue,
+                        value: rawValue,
+                        visualState: showErrors ? "invalid" : "none"
+                    };
+                    return [fieldName, field];
+                }
+                else {
+                    // Valid field info
+                    var field = {
+                        formattedValue: formatter(parsedValue),
+                        hasErrors: false,
+                        isParsed: true,
+                        parsedValue: parsedValue,
+                        value: rawValue,
+                        visualState: showErrors ? "valid" : "none"
+                    };
+                    return [fieldName, field];
+                }
             }
-            return result;
-        }, {});
-        var isAllParsed = utils_1.entries(parsedFields).every(function (_a) {
-            var _ = _a[0], info = _a[1];
-            return info.isParsed;
         });
-        var data = utils_1.entries(parsedFields)
-            .filter(function (_a) {
-            var _ = _a[0], val = _a[1];
-            return val.isParsed;
-        })
-            .reduce(function (result, _a) {
-            var name = _a[0], val = _a[1];
-            result[name] = val.parsedValue;
-            return result;
-        }, {});
-        var hasExtraErrors = state.errors &&
-            (!utils_1.isNullOrEmptyArray(state.errors.message) ||
-                (state.errors.fields &&
-                    utils_1.entries(state.errors.fields).some(function (_a) {
-                        var _ = _a[0], err = _a[1];
-                        return !utils_1.isNullOrEmptyArray(err);
-                    })));
-        return {
-            data: isAllParsed ? data : undefined,
-            fields: utils_1.entries(parsedFields)
-                .reduce(function (result, _a) {
-                var name = _a[0], val = _a[1];
-                var error = val.isParsed
-                    ? state.errors && state.errors.fields && !utils_1.isNullOrEmptyArray(state.errors.fields[name])
-                        ? state.errors.fields[name]
-                        : undefined
-                    : val.errors;
-                var hasError = !val.isParsed || !utils_1.isNullOrEmptyArray(error);
-                var showErrors = (!val.isParsed && state.formatted.has(name)) ||
-                    (state.validated && !state.touched.has(name));
-                result[name] = {
-                    errors: hasError ? error : undefined,
-                    formattedValue: val.formattedValue,
-                    isParsed: val.isParsed,
-                    parsedValue: val.parsedValue,
-                    value: val.value,
-                    visualState: showErrors
-                        ? (hasError ? "invalid" : "valid")
-                        : "none"
-                };
-                return result;
-            }, {}),
-            formError: state.errors ? state.errors.message : undefined,
-            isValid: (isAllParsed && !hasExtraErrors) || !!state.touched.size
-        };
-    };
-    RdReduxFormImpl.prototype.createConnect = function () {
-        var self = this;
-        var result = {
-            dispatch: this.config.dispatch(this.config, this.actions),
-            stateToFields: function (state) { return self.selector(state); }
-        };
-        return result;
+        var isFormValid = fields.every(function (_a) {
+            var _ = _a[0], field = _a[1];
+            return !field.hasErrors;
+        });
+        var hasFormError = state.errors && state.errors.message && state.errors.message.length;
+        if (!isFormValid || hasFormError) {
+            var formInfo = {
+                fields: fields.reduce(function (result, _a) {
+                    var fieldName = _a[0], field = _a[1];
+                    result[fieldName] = field;
+                    return result;
+                }, {}),
+                formError: (hasFormError && state.errors) ? state.errors.message : undefined,
+                isValid: false,
+            };
+            return formInfo;
+        }
+        else {
+            var formInfo = {
+                data: fields.reduce(function (result, _a) {
+                    var fieldName = _a[0], field = _a[1];
+                    if (field.isParsed) {
+                        result[fieldName] = field.parsedValue;
+                    }
+                    return result;
+                }, {}),
+                fields: fields.reduce(function (result, _a) {
+                    var fieldName = _a[0], field = _a[1];
+                    result[fieldName] = field;
+                    return result;
+                }, {}),
+                isValid: true,
+            };
+            return formInfo;
+        }
     };
     return RdReduxFormImpl;
 }());

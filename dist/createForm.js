@@ -2,15 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var RdReduxForm_1 = require("./runtime/RdReduxForm");
 var existingForms = new Set();
-function createForm(title, config) {
-    if (!config) {
-        throw new Error("Form configuration is missing.");
-    }
-    if (!config.fields || !Object.keys(config.fields).length) {
-        throw new Error("Form fields is missing.");
+function createForm(title, fields) {
+    if (!fields) {
+        throw new Error("Form fields configuration is missing.");
     }
     title = uniqueFormTitle(title);
-    return new RdReduxForm_1.RdReduxFormImpl(title, config);
+    return new RdReduxForm_1.RdReduxFormImpl(title, fields);
 }
 exports.createForm = createForm;
 function uniqueFormTitle(title) {

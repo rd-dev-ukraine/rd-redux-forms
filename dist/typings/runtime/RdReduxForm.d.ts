@@ -1,19 +1,14 @@
 import { Action } from "redux";
-import { FormActions, FormConfiguration, FormSelectorResult, RdReduxForm, RdReduxFormConnect, RdReduxFormState } from "../api";
-export declare type FieldTypedHash<T, F> = {
-    [P in keyof T]: F;
-};
+import { FormActions, FormFieldsConfiguration, InvalidFormSelectorResult, RdReduxForm, ReduxFormState, ValidFormSelectorResult } from "../api";
 export declare class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<TFields, TMeta> {
     private title;
-    private config;
+    private fieldConfiguration;
     actions: FormActions<TFields, TMeta>;
-    connect: RdReduxFormConnect<TFields, TMeta>;
     state: {
-        empty(): any;
-        withData(data: TFields): any;
+        empty(): ReduxFormState<TFields>;
+        withData(data: TFields): ReduxFormState<TFields>;
     };
-    constructor(title: string, config: FormConfiguration<TFields, TMeta>);
-    reducer<TState extends RdReduxFormState<TFields>>(state: TState, action: Action): TState;
-    selector(state: RdReduxFormState<TFields>, ...initialData: Array<Partial<TFields>>): FormSelectorResult<TFields>;
-    private createConnect();
+    constructor(title: string, fieldConfiguration: FormFieldsConfiguration<TFields>);
+    reducer<TState extends ReduxFormState<TFields>>(state: TState, action: Action): TState;
+    selector(state: ReduxFormState<TFields>, ...initialData: Array<Partial<TFields>>): ValidFormSelectorResult<TFields> | InvalidFormSelectorResult<TFields>;
 }

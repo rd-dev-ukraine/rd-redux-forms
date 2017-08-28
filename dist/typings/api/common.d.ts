@@ -47,10 +47,11 @@ export interface ValidFormSelectorResult<T> {
 export interface InvalidFormSelectorResult<T> {
     isValid: false;
     fields: {
-        [P in keyof T]: ValidFieldInfo | ParsedFieldWithCustomErrorInfo | NonParsedFieldInfo;
+        [P in keyof T]: FieldInfo;
     };
     formError?: string[];
 }
+export declare type FieldInfo = ValidFieldInfo | ParsedFieldWithCustomErrorInfo | NonParsedFieldInfo;
 /**
  * Info about parsed field without custom errors.
  */
@@ -89,6 +90,7 @@ export interface ParsedFieldWithCustomErrorInfo {
      * Value to display in editor.
      */
     value: any;
+    parsedValue: any;
     /**
      * Value formatted with formatting function.
      */
@@ -121,8 +123,6 @@ export interface NonParsedFieldInfo {
     visualState: FieldVisualState;
 }
 export interface InvalidField {
-    /** False since field is not valid. */
-    isValid: false;
     /** Array of combined custom and parse errors. */
     errors: string[];
 }
