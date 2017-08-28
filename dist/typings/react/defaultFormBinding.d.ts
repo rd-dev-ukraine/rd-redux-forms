@@ -1,2 +1,1 @@
-import { RdReduxFormBindingFactory } from "../api";
-export declare const defaultFormBinding: () => RdReduxFormBindingFactory<any, any>;
+export declare const defaultFormBinding: () => any;

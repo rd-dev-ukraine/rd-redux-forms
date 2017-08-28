@@ -68,7 +68,7 @@ var FormActionsImpl = (function () {
     };
     FormActionsImpl.prototype.resetErrors = function (meta) {
         if (meta === void 0) { meta = undefined; }
-        return this.setErrors(meta);
+        return this.setErrors(undefined, meta);
     };
     FormActionsImpl.prototype.reset = function (meta) {
         if (meta === void 0) { meta = undefined; }

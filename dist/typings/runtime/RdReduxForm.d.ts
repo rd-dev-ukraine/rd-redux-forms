@@ -9,8 +9,8 @@ export declare class RdReduxFormImpl<TFields, TMeta = undefined> implements RdRe
     actions: FormActions<TFields, TMeta>;
     connect: RdReduxFormConnect<TFields, TMeta>;
     state: {
-        empty(): RdReduxFormState<TFields>;
-        withData(data: TFields): RdReduxFormState<TFields>;
+        empty(): any;
+        withData(data: TFields): any;
     };
     constructor(title: string, config: FormConfiguration<TFields, TMeta>);
     reducer<TState extends RdReduxFormState<TFields>>(state: TState, action: Action): TState;

@@ -83,7 +83,7 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
     }
 
     resetErrors(meta: TMeta = undefined as any): FormSetErrorsAction<TFields, TMeta> {
-        return this.setErrors(meta);
+        return this.setErrors(undefined, meta);
     }
 
     reset(meta: TMeta = undefined as any): FormResetAction<TMeta> {
@@ -120,7 +120,7 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
 
     isMyAction(action: Action): action is RdReduxFormActionBase<TMeta> {
         if (action && `${action.type}`.indexOf(this.actionPrefix()) === 0) {
-            return (action as RdReduxFormActionBase).form === this.title;
+            return (action as RdReduxFormActionBase<TMeta>).form === this.title;
         }
 
         return false;

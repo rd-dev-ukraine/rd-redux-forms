@@ -1,9 +1,5 @@
-import { FormActions } from "./actions";
-import { RdReduxFormEventsBindingFactory } from "./common";
-
-export interface FormConfiguration<TFields, TMeta = undefined> {
+export interface FormConfiguration<TFields, TMeta> {
     fields: FormFieldsConfiguration<TFields>;
-    dispatch: RdReduxFormBindingFactory<TFields, TMeta>;
 }
 
 export type FormFieldsConfiguration<T> = {
@@ -24,7 +20,3 @@ export interface FieldConfiguration<T> {
 
 export type ParserFn<T> = (input: any) => T | undefined;
 export type FormatterFn<T> = (input: T | null | undefined) => any;
-
-export type RdReduxFormBindingFactory<TFields, TMeta> =
-    (config: FormConfiguration<TFields, TMeta>, actions: FormActions<TFields, TMeta>) =>
-        RdReduxFormEventsBindingFactory<TFields, TMeta>;

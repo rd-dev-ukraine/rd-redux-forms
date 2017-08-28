@@ -1,14 +1,23 @@
-import { Dispatch } from "redux";
-
+/**
+ * Errors for the field and for the form itself.
+ */
 export interface FormErrors<T> {
+    /**
+     * Form errors.
+     */
     message?: string[];
 
+    /** Fields errors */
     fields?: {
         [P in keyof T]?: string[];
     };
 }
 
-export interface RdReduxFormState<T> {
+/**
+ * App state for the one form.
+ */
+export interface ReduxFormState<T> {
+    /** Field values. */
     fields: {[P in keyof T]: any };
 
     /** All fields were changed since last validation or reset. */
@@ -17,60 +26,149 @@ export interface RdReduxFormState<T> {
     /** All fields were formatted since last validation or reset. */
     formatted: Set<string>;
 
+    /**
+     * True if form tried to validate.
+     */
     validated: boolean;
 
     /** Optional external errors. */
     errors?: FormErrors<T>;
 }
 
-export interface FormSelectorResult<T> {
+/**
+ * Detailed info about form without errors.
+ */
+export interface ValidFormSelectorResult<T> {
+    /** True since form is valid. */
+    isValid: true;
+
     fields: {
-        [P in keyof T]: FieldSelectorResult;
+        [P in keyof T]: ValidFieldInfo;
     };
 
-    isValid: boolean;
-    data?: T;
+    /**
+     * Parsed form data.
+     */
+    data: T;
+}
+
+export interface InvalidFormSelectorResult<T> {
+    isValid: false;
+
+    fields: {
+        [P in keyof T]: ValidFieldInfo | ParsedFieldWithCustomErrorInfo | NonParsedFieldInfo;
+    };
 
     formError?: string[];
 }
 
-export interface FieldSelectorResult {
-    /** Value to display in input. */
-    value: string;
-
-    /** True if value was successfully parsed, false otherwise. */
-    isParsed: boolean;
-
-    /** Parsed value. If value can't be parsed would be undefined. */
-    parsedValue?: any;
+/**
+ * Info about parsed field without custom errors.
+ */
+export interface ValidFieldInfo {
+    /** True as value has been parsed successfully. */
+    isParsed: true;
 
     /**
-     * Formatted value. Defined only if value was successfully parsed.
-     * Avoid displaying this value in input,
-     * value in the 'value' field will be automatically formatted at specified conditions.
+     * False since field is valid.
      */
-    formattedValue?: string;
+    hasErrors: false;
 
-    errors?: string[];
+    /**
+     * Value to display in editor.
+     */
+    value: any;
 
+    /**
+     * Value formatted with formatting function.
+     */
+    formattedValue: any;
+
+    parsedValue: any;
+
+    /**
+     * A value indicates how field should be displayed on UI.
+     */
     visualState: FieldVisualState;
 }
 
+/**
+ * Info about parsed field but with custom errors.
+ */
+export interface ParsedFieldWithCustomErrorInfo {
+    /** True as value has been parsed successfully. */
+    isParsed: true;
+
+    /**
+     * False since field is valid.
+     */
+    hasErrors: true;
+
+    /**
+     * Value to display in editor.
+     */
+    value: any;
+
+    /**
+     * Value formatted with formatting function.
+     */
+    formattedValue: any;
+
+    /**
+     * A value indicates how field should be displayed on UI.
+     */
+    visualState: FieldVisualState;
+
+    /**
+     * An errors for the field.
+     */
+    errors: FieldWithCustomErrors;
+}
+
+/**
+ * Field with parse error.
+ */
+export interface NonParsedFieldInfo {
+    /** False since field is not parsed. */
+    isParsed: false;
+
+    hasErrors: true;
+
+    /** Value of the field to display in input. */
+    value: any;
+
+    /**
+     * Field errors.
+     */
+    errors: FieldWithParseError | (FieldWithParseError & FieldWithCustomErrors);
+
+    /**
+     * A value indicates how field should be displayed on UI.
+     */
+    visualState: FieldVisualState;
+}
+
+export interface InvalidField {
+    /** False since field is not valid. */
+    isValid: false;
+    /** Array of combined custom and parse errors. */
+    errors: string[];
+}
+
+export interface FieldWithCustomErrors extends InvalidField {
+    /** True if field has custom errors set. */
+    hasCustomErrors: true;
+    /**
+     * Array of custom errors.
+     */
+    customErrors: string[];
+}
+
+export interface FieldWithParseError extends InvalidField {
+    /** True if field has parse error. */
+    hasParseError: true;
+    /** A parse error. */
+    parseError: string;
+}
+
 export type FieldVisualState = "none" | "valid" | "invalid";
-
-export type RdReduxFormEventsBindingFactory<TFields, TMeta = undefined> =
-    (dispatch: Dispatch<any>, meta?: TMeta) => RdReduxFormEvents<TFields>;
-
-export interface RdReduxFormEvents<TFields> {
-    $events: {
-        form: any;
-        fields: {
-            [F in keyof TFields]: any;
-        }
-    };
-}
-
-export interface RdReduxFormConnect<TFields, TMeta = undefined> {
-    stateToFields: (state: RdReduxFormState<TFields>) => FormSelectorResult<TFields>;
-    dispatch: RdReduxFormEventsBindingFactory<TFields, TMeta>;
-}
