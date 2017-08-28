@@ -3,9 +3,15 @@
   "version": "0.0.1",
   "private": false,
   "description": "HTML forms for react and redux",
+  "keywords": [
+    "react",
+    "redux",
+    "forms"
+  ],
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "build:watch": "tsc --watch"
   },
   "repository": {
     "type": "git",
