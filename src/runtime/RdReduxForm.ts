@@ -3,13 +3,13 @@ import {
     FieldInfo,
     FormActions,
     FormFieldsConfiguration,
-    InvalidFormSelectorResult,
+    InvalidFormInfo,
     NonParsedFieldInfo,
     ParsedFieldWithCustomErrorInfo,
     RdReduxForm,
     ReduxFormState,
     ValidFieldInfo,
-    ValidFormSelectorResult
+    ValidFormInfo
 } from "../api";
 
 import { FormActionsImpl } from "./FormActionsImpl";
@@ -124,7 +124,7 @@ export class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<
     selector(
         state: ReduxFormState<TFields>,
         ...initialData: Array<Partial<TFields>>):
-        ValidFormSelectorResult<TFields> | InvalidFormSelectorResult<TFields> {
+        ValidFormInfo<TFields> | InvalidFormInfo<TFields> {
 
         state = state || this.state.empty();
 
@@ -149,8 +149,8 @@ export class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<
                         ? state.errors.fields[fieldName]
                         : undefined;
 
-                    const showErrors = state.formatted.has(name) ||
-                        (state.validated && !state.touched.has(name));
+                    const showErrors = state.formatted.has(fieldName) ||
+                        (state.validated && !state.touched.has(fieldName));
 
                     // Non parsed field info
                     if (parsedValue === undefined) {
@@ -213,7 +213,7 @@ export class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<
         const hasFormError = state.errors && state.errors.message && state.errors.message.length;
 
         if (!isFormValid || hasFormError) {
-            const formInfo: InvalidFormSelectorResult<TFields> = {
+            const formInfo: InvalidFormInfo<TFields> = {
                 fields: fields.reduce<any>((result: any, [fieldName, field]) => {
                     result[fieldName] = field;
                     return result;
@@ -224,7 +224,7 @@ export class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<
 
             return formInfo;
         } else {
-            const formInfo: ValidFormSelectorResult<TFields> = {
+            const formInfo: ValidFormInfo<TFields> = {
                 data: fields.reduce<any>((result: any, [fieldName, field]) => {
                     if (field.isParsed) {
                         result[fieldName] = field.parsedValue;

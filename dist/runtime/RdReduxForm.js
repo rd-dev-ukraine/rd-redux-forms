@@ -94,8 +94,8 @@ var RdReduxFormImpl = (function () {
                 !!state.errors.fields[fieldName].length
                 ? state.errors.fields[fieldName]
                 : undefined;
-            var showErrors = state.formatted.has(name) ||
-                (state.validated && !state.touched.has(name));
+            var showErrors = state.formatted.has(fieldName) ||
+                (state.validated && !state.touched.has(fieldName));
             // Non parsed field info
             if (parsedValue === undefined) {
                 var field = {

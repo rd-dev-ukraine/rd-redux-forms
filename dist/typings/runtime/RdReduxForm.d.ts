@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import { FormActions, FormFieldsConfiguration, InvalidFormSelectorResult, RdReduxForm, ReduxFormState, ValidFormSelectorResult } from "../api";
+import { FormActions, FormFieldsConfiguration, InvalidFormInfo, RdReduxForm, ReduxFormState, ValidFormInfo } from "../api";
 export declare class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<TFields, TMeta> {
     private title;
     private fieldConfiguration;
@@ -10,5 +10,5 @@ export declare class RdReduxFormImpl<TFields, TMeta = undefined> implements RdRe
     };
     constructor(title: string, fieldConfiguration: FormFieldsConfiguration<TFields>);
     reducer<TState extends ReduxFormState<TFields>>(state: TState, action: Action): TState;
-    selector(state: ReduxFormState<TFields>, ...initialData: Array<Partial<TFields>>): ValidFormSelectorResult<TFields> | InvalidFormSelectorResult<TFields>;
+    selector(state: ReduxFormState<TFields>, ...initialData: Array<Partial<TFields>>): ValidFormInfo<TFields> | InvalidFormInfo<TFields>;
 }

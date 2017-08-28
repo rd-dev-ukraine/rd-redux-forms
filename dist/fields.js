@@ -25,13 +25,13 @@ exports.fields = {
                 if (input === void 0) { input = ""; }
                 input = input.trim();
                 if (!input) {
-                    return required ? undefined : null;
+                    return required ? undefined : 0;
                 }
                 var parsed = parseInt(input, 10);
                 return isNaN(parsed) ? undefined : parsed;
             },
             formatter: function (input) {
-                if (input === null || input === undefined) {
+                if (input === undefined) {
                     return "";
                 }
                 return input.toFixed(0);

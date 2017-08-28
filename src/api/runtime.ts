@@ -1,7 +1,7 @@
 import { Action } from "redux";
 
 import { FormActions } from "./actions";
-import { InvalidFormSelectorResult, ReduxFormState, ValidFormSelectorResult } from "./common";
+import { InvalidFormInfo, ReduxFormState, ValidFormInfo } from "./common";
 
 /**
  * rd-redux-forms object describes a form.
@@ -25,7 +25,7 @@ export interface RdReduxForm<TFields, TMeta> {
      * @returns An object contains all information about form input.
      */
     selector: (state: ReduxFormState<TFields>, ...initialData: Array<Partial<TFields>>) =>
-        ValidFormSelectorResult<TFields> | InvalidFormSelectorResult<TFields>;
+        ValidFormInfo<TFields> | InvalidFormInfo<TFields>;
 
     /** Creates different form state. */
     state: {

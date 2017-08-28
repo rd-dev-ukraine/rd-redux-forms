@@ -33,7 +33,7 @@ export interface ReduxFormState<T> {
 /**
  * Detailed info about form without errors.
  */
-export interface ValidFormSelectorResult<T> {
+export interface ValidFormInfo<T> {
     /** True since form is valid. */
     isValid: true;
     fields: {
@@ -44,7 +44,7 @@ export interface ValidFormSelectorResult<T> {
      */
     data: T;
 }
-export interface InvalidFormSelectorResult<T> {
+export interface InvalidFormInfo<T> {
     isValid: false;
     fields: {
         [P in keyof T]: FieldInfo;
@@ -102,7 +102,7 @@ export interface ParsedFieldWithCustomErrorInfo {
     /**
      * An errors for the field.
      */
-    errors: FieldWithCustomErrors;
+    errors: CustomFieldErrors;
 }
 /**
  * Field with parse error.
@@ -116,17 +116,17 @@ export interface NonParsedFieldInfo {
     /**
      * Field errors.
      */
-    errors: FieldWithParseError | (FieldWithParseError & FieldWithCustomErrors);
+    errors: ParseFieldErrors | (ParseFieldErrors & CustomFieldErrors);
     /**
      * A value indicates how field should be displayed on UI.
      */
     visualState: FieldVisualState;
 }
-export interface InvalidField {
+export interface FieldErrors {
     /** Array of combined custom and parse errors. */
     errors: string[];
 }
-export interface FieldWithCustomErrors extends InvalidField {
+export interface CustomFieldErrors extends FieldErrors {
     /** True if field has custom errors set. */
     hasCustomErrors: true;
     /**
@@ -134,7 +134,7 @@ export interface FieldWithCustomErrors extends InvalidField {
      */
     customErrors: string[];
 }
-export interface FieldWithParseError extends InvalidField {
+export interface ParseFieldErrors extends FieldErrors {
     /** True if field has parse error. */
     hasParseError: true;
     /** A parse error. */

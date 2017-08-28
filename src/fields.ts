@@ -17,19 +17,19 @@ export const fields = {
         }
     }),
 
-    int: (required: boolean = true): FieldConfiguration<number | null> => ({
-        parser(input: string = ""): number | null | undefined {
+    int: (required: boolean = true): FieldConfiguration<number> => ({
+        parser(input: string = ""): number | undefined {
             input = input.trim();
 
             if (!input) {
-                return required ? undefined : null;
+                return required ? undefined : 0;
             }
 
             const parsed = parseInt(input, 10);
             return isNaN(parsed) ? undefined : parsed;
         },
-        formatter(input: number | null | undefined): string {
-            if (input === null || input === undefined) {
+        formatter(input: number | undefined): string {
+            if (input === undefined) {
                 return "";
             }
 
