@@ -42,7 +42,6 @@ describe("Selector", () => {
 
             result.should.be.eql(expected);
         });
-
     });
 
 });
