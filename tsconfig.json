@@ -28,7 +28,7 @@
   },
   "include": [
     "src/index.ts",
-    "src/redux/index.ts"
+    "src/bindings/index.ts"
   ],
   "exclude": [
     "dist",

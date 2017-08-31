@@ -19,5 +19,6 @@
             "never"
         ]
     },
-    "rulesDirectory": []
+    "rulesDirectory": [],
+    "arrow-parens": false
 }

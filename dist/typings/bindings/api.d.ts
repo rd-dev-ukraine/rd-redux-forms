@@ -1,16 +1,13 @@
 import { Dispatch } from "redux";
-
 /** An property bindings (usually event handlers) for form and inputs. */
 export interface RdReduxFormBindings<TForm> {
     /** An event handlers for a <form> tag */
     form: any;
-
     /** An event handlers for each field input. */
     fields: {
         [P in keyof TForm]: any;
     };
 }
-
 /** Creates a rd-redux-form bindings. */
 export interface BindingFactory<TForm, TMeta> {
     /**
@@ -21,7 +18,6 @@ export interface BindingFactory<TForm, TMeta> {
      * @param meta A meta object passed with each dispatched action.
      */
     bind(meta: TMeta): RdReduxFormBindings<TForm>;
-
     /**
      * Creates an object ready to spreat into the result of the mapDispatchToProperties
      * argument of the connect call in case if
