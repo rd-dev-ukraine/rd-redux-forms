@@ -1,47 +1,55 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var event_config_builder_1 = require("./event-config-builder");
+var field_binding_configuration_1 = require("./field-binding-configuration");
 var FormBindingConfiguration = (function () {
     function FormBindingConfiguration() {
-        this.defaultFieldBinding = new event_config_builder_1.EventConfigBuilder();
+        this.fieldsConfig = {};
     }
-    FormBindingConfiguration.prototype.submit = function () {
-        this.lastAction = "submit";
-        this.defaultFieldBinding.add(this.lastAction, "submit", function (e) { return undefined; }, true);
+    /**
+     * Specifies a form for the binidng configuration.
+     *
+     * @param form A form configuration for binidng
+     */
+    FormBindingConfiguration.prototype.withForm = function (form) {
+        if (!form) {
+            throw new Error("Form is not defined.");
+        }
+        this.form = form;
         return this;
     };
-    FormBindingConfiguration.prototype.format = function () {
-        this.lastAction = "format";
-        return this.onBlur(true);
+    /**
+     * Configure bindings for all fields.
+     */
+    FormBindingConfiguration.prototype.allFields = function () {
+        var _this = this;
+        this.allFieldConfig = new field_binding_configuration_1.FieldBindingConfiguration();
+        this.allFieldConfig.end = function () { return _this; };
+        return this.allFieldConfig;
     };
-    FormBindingConfiguration.prototype.unformat = function () {
-        this.lastAction = "unformat";
-        return this.onFocus(true);
-    };
-    FormBindingConfiguration.prototype.edit = function () {
-        this.lastAction = "edit";
-        return this.onChange(true);
-    };
-    FormBindingConfiguration.prototype.onChange = function (isDefault) {
-        if (isDefault === void 0) { isDefault = false; }
-        return this.onEvent("onChange", function (e) { return e.currentTarget.value; }, isDefault);
-    };
-    FormBindingConfiguration.prototype.onFocus = function (isDefault) {
-        if (isDefault === void 0) { isDefault = false; }
-        return this.onEvent("onFocus", function (e) { return e.currentTarget.value; }, isDefault);
-    };
-    FormBindingConfiguration.prototype.onBlur = function (isDefault) {
-        if (isDefault === void 0) { isDefault = false; }
-        return this.onEvent("onBlur", function (e) { return e.currentTarget.value; }, isDefault);
-    };
-    FormBindingConfiguration.prototype.onEvent = function (event, argParser, isDefault) {
-        if (isDefault === void 0) { isDefault = false; }
-        this.lastEvent = event;
-        this.defaultFieldBinding.add(this.lastAction, this.lastEvent, argParser, isDefault);
+    FormBindingConfiguration.prototype.configureFields = function (fieldsConfig) {
+        if (!fieldsConfig) {
+            throw new Error("Fields configuration is not defined.");
+        }
+        this.fieldsConfig = fieldsConfig;
         return this;
     };
-    FormBindingConfiguration.prototype.throttle = function (timeout) {
-        return this;
+    FormBindingConfiguration.prototype.bind = function (dispatch, meta) {
+        var _this = this;
+        if (!dispatch) {
+            throw new Error("Dispatch function is not defined.");
+        }
+        if (!this.form) {
+            throw new Error("Form is not attached to the binding config.");
+        }
+        var fields = this.form.fields.reduce(function (result, field) {
+            var bindingFactory = (_this.fieldsConfig || {})[field] || _this.allFieldConfig;
+            result[field] = bindingFactory.build(_this.form, field, dispatch, meta);
+            return result;
+        }, {});
+        return {
+            fields: fields,
+            form: {},
+        };
     };
     return FormBindingConfiguration;
 }());

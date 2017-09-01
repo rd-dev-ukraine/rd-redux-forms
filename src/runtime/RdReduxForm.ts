@@ -16,9 +16,18 @@ import { FormActionsImpl } from "./FormActionsImpl";
 
 const DEFAULT_PARSE_ERROR = "Value is not valid.";
 
-export class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<TFields, TMeta> {
+export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMeta> {
+
+    types = {
+        get fields(): TFields { throw new Error("Use with Typescript typeof expression only."); },
+
+        get meta(): TMeta { throw new Error("Use with Typescript typeof expression only."); },
+    };
+
+    fields: string[] = [];
 
     actions: FormActions<TFields, TMeta> = new FormActionsImpl<TFields, TMeta>(this.title);
+
     state = {
         /**
          * Gets the state for the form without data.
@@ -55,6 +64,8 @@ export class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<
         if (!fieldConfiguration) {
             throw new Error("Form field configuraion is not defined.");
         }
+
+        this.fields = Object.keys(fieldConfiguration);
     }
 
     reducer<TState extends ReduxFormState<TFields>>(state: TState, action: Action): TState {

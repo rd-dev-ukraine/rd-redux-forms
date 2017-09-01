@@ -1,88 +1,77 @@
-import * as React from "react";
-
+import { Dispatch } from "redux";
+import { RdReduxForm } from "../../index";
 import {
-    ActionTriggerConfigurationBuilder,
-    FieldActionConfigurationBuilder,
-    TriggerConfigurationBuilder
+    AnyFormBindingTypeConfiguration,
+    BindingFactory,
+    FormBindings
 } from "../configuration";
-import { EventConfigBuilder } from "./event-config-builder";
+import { TypedFormBindingTypeConfiguration } from "../index";
+import { FieldBindingConfiguration } from "./field-binding-configuration";
 
 export class FormBindingConfiguration implements
-    FieldActionConfigurationBuilder,
-    ActionTriggerConfigurationBuilder,
-    TriggerConfigurationBuilder {
+    AnyFormBindingTypeConfiguration,
+    TypedFormBindingTypeConfiguration<any, any>,
+    BindingFactory<any, any> {
 
-    private defaultFieldBinding = new EventConfigBuilder();
+    private allFieldConfig: FieldBindingConfiguration;
+    private fieldsConfig: { [field: string]: FieldBindingConfiguration; } = {};
 
-    private lastAction: keyof FieldActionConfigurationBuilder;
-    private lastEvent: string;
+    private form: RdReduxForm<any, any> | undefined;
 
-    submit(): this {
-        this.lastAction = "submit";
-        this.defaultFieldBinding.add(
-            this.lastAction,
-            "submit",
-            (e) => undefined,
-            true
-        );
+    /**
+     * Specifies a form for the binidng configuration.
+     *
+     * @param form A form configuration for binidng
+     */
+    withForm<TForm, TMeta>(form: RdReduxForm<TForm, TMeta>): TypedFormBindingTypeConfiguration<TForm, TMeta> {
+        if (!form) {
+            throw new Error("Form is not defined.");
+        }
+
+        this.form = form;
+        return this;
+    }
+
+    /**
+     * Configure bindings for all fields.
+     */
+    allFields(): FieldBindingConfiguration & { end(): FormBindingConfiguration } {
+        this.allFieldConfig = new FieldBindingConfiguration();
+        (this.allFieldConfig as any).end = () => this;
+
+        return this.allFieldConfig as any;
+    }
+
+    configureFields(fieldsConfig: any): BindingFactory<any, any> {
+        if (!fieldsConfig) {
+            throw new Error("Fields configuration is not defined.");
+        }
+
+        this.fieldsConfig = fieldsConfig;
 
         return this;
     }
 
-    format(): this {
-        this.lastAction = "format";
-        return this.onBlur(true);
-    }
+    bind(dispatch: Dispatch<any>, meta: any): FormBindings<any> {
+        if (!dispatch) {
+            throw new Error("Dispatch function is not defined.");
+        }
+        if (!this.form) {
+            throw new Error("Form is not attached to the binding config.");
+        }
 
-    unformat(): this {
-        this.lastAction = "unformat";
-        return this.onFocus(true);
-    }
+        const fields = this.form.fields.reduce((result: any, field: string) => {
+            const bindingFactory = (this.fieldsConfig || {})[field] || this.allFieldConfig;
 
-    edit(): this {
-        this.lastAction = "edit";
-        return this.onChange(true);
-    }
+            result[field] = bindingFactory.build<any, any>(this.form as any, field, dispatch, meta);
 
-    onChange(isDefault = false): this {
-        return this.onEvent(
-            "onChange",
-            (e: React.ChangeEvent<any>) => e.currentTarget.value,
-            isDefault
-        );
-    }
+            return result;
+        }, {});
 
-    onFocus(isDefault = false): this {
-        return this.onEvent(
-            "onFocus",
-            (e: React.ChangeEvent<any>) => e.currentTarget.value,
-            isDefault
-        );
-    }
-
-    onBlur(isDefault = false): this {
-        return this.onEvent(
-            "onBlur",
-            (e: React.ChangeEvent<any>) => e.currentTarget.value,
-            isDefault
-        );
-    }
-
-    onEvent<T>(event: string, argParser: (event: T) => any, isDefault: boolean = false): this {
-        this.lastEvent = event;
-
-        this.defaultFieldBinding.add(
-            this.lastAction,
-            this.lastEvent,
-            argParser,
-            isDefault
-        );
-
-        return this;
-    }
-
-    throttle(timeout: number): FieldActionConfigurationBuilder {
-        return this;
+        return {
+            fields,
+            form: {},
+        };
     }
 
 }

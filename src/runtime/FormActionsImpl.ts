@@ -2,6 +2,7 @@ import { Action } from "redux";
 import {
     FieldEditAction,
     FieldFormatAction,
+    FieldUnformatAction,
     FormActions,
     FormErrors,
     FormResetAction,
@@ -15,10 +16,10 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
     types = {
         FIELD_EDIT: this.makeActionType("EDIT_FIELD"),
         FIELD_FORMAT: this.makeActionType("FORMAT_FIELD"),
+        FIELD_UNFORMAT: this.makeActionType("UNFORMAT_FIELD"),
         RESET: this.makeActionType("RESET"),
         SET_DATA: this.makeActionType("SET_DATA"),
         SET_ERRORS: this.makeActionType("SET_ERRORS"),
-        UNFORMAT: this.makeActionType("UNFORMAT"),
         VALIDATE: this.makeActionType("VALIDATE"),
     } ;
 
@@ -48,6 +49,19 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
             form: this.title,
             meta,
             type: this.types.FIELD_FORMAT,
+        };
+    }
+
+    fieldUnformat(field: keyof TFields, meta: TMeta = undefined as any): FieldUnformatAction<TFields, TMeta> {
+        if (!field) {
+            throw new Error("Field is not defined.");
+        }
+
+        return {
+            field,
+            form: this.title,
+            meta,
+            type: this.types.FIELD_UNFORMAT,
         };
     }
 
@@ -107,6 +121,10 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
 
     isFieldFormat(action?: Action): action is FieldFormatAction<TFields, TMeta> {
         return !!action && action.type === this.types.FIELD_FORMAT;
+    }
+
+    isFieldUnformat(action?: Action): action is FieldUnformatAction<TFields, TMeta> {
+        return !!action && action.type === this.types.FIELD_UNFORMAT;
     }
 
     isValidate(action?: Action): action is FormValidateAction<TMeta> {

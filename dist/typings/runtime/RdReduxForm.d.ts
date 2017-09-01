@@ -1,8 +1,13 @@
 import { Action } from "redux";
 import { FormActions, FormFieldsConfiguration, InvalidFormInfo, RdReduxForm, ReduxFormState, ValidFormInfo } from "../api";
-export declare class RdReduxFormImpl<TFields, TMeta = undefined> implements RdReduxForm<TFields, TMeta> {
+export declare class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMeta> {
     private title;
     private fieldConfiguration;
+    types: {
+        readonly fields: TFields;
+        readonly meta: TMeta;
+    };
+    fields: string[];
     actions: FormActions<TFields, TMeta>;
     state: {
         empty(): ReduxFormState<TFields>;

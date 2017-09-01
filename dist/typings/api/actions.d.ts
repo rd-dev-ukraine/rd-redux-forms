@@ -6,10 +6,10 @@ export interface FormActions<TFields, TMeta = undefined> {
         SET_DATA: string;
         FIELD_EDIT: string;
         FIELD_FORMAT: string;
+        FIELD_UNFORMAT: string;
         VALIDATE: string;
         SET_ERRORS: string;
         RESET: string;
-        UNFORMAT: string;
     };
     /**
      * Sets the values for the fields,
@@ -24,6 +24,10 @@ export interface FormActions<TFields, TMeta = undefined> {
      * Formats a value for the field using field formatting function.
      */
     fieldFormat(field: keyof TFields, meta?: TMeta): FieldFormatAction<TFields, TMeta>;
+    /**
+     * Prepares an input for editing by optionally replacing a value with another more convenient for editing.
+     */
+    fieldUnformat(field: keyof TFields, meta?: TMeta): FieldUnformatAction<TFields, TMeta>;
     /**
      * Initiates form saving process.
      * Usually should be called on form submit.
@@ -62,6 +66,10 @@ export interface FormActions<TFields, TMeta = undefined> {
      */
     isFieldFormat(action?: Action): action is FieldFormatAction<TFields, TMeta>;
     /**
+     * Checks if action is field un-formatting action.
+     */
+    isFieldUnformat(action?: Action): action is FieldUnformatAction<TFields, TMeta>;
+    /**
      * Checks if action is form validation action.
      */
     isValidate(action?: Action): action is FormValidateAction<TMeta>;
@@ -88,6 +96,9 @@ export interface FieldEditAction<TFields, TMeta = undefined> extends RdReduxForm
     value: any;
 }
 export interface FieldFormatAction<TFields, TMeta = undefined> extends RdReduxFormActionBase<TMeta> {
+    field: keyof TFields;
+}
+export interface FieldUnformatAction<TFields, TMeta = undefined> extends RdReduxFormActionBase<TMeta> {
     field: keyof TFields;
 }
 export interface FormValidateAction<TMeta = undefined> extends RdReduxFormActionBase<TMeta> {

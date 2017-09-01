@@ -6,10 +6,10 @@ var FormActionsImpl = (function () {
         this.types = {
             FIELD_EDIT: this.makeActionType("EDIT_FIELD"),
             FIELD_FORMAT: this.makeActionType("FORMAT_FIELD"),
+            FIELD_UNFORMAT: this.makeActionType("UNFORMAT_FIELD"),
             RESET: this.makeActionType("RESET"),
             SET_DATA: this.makeActionType("SET_DATA"),
             SET_ERRORS: this.makeActionType("SET_ERRORS"),
-            UNFORMAT: this.makeActionType("UNFORMAT"),
             VALIDATE: this.makeActionType("VALIDATE"),
         };
     }
@@ -36,6 +36,18 @@ var FormActionsImpl = (function () {
             form: this.title,
             meta: meta,
             type: this.types.FIELD_FORMAT,
+        };
+    };
+    FormActionsImpl.prototype.fieldUnformat = function (field, meta) {
+        if (meta === void 0) { meta = undefined; }
+        if (!field) {
+            throw new Error("Field is not defined.");
+        }
+        return {
+            field: field,
+            form: this.title,
+            meta: meta,
+            type: this.types.FIELD_UNFORMAT,
         };
     };
     FormActionsImpl.prototype.setData = function (data, resetState, meta) {
@@ -89,6 +101,9 @@ var FormActionsImpl = (function () {
     };
     FormActionsImpl.prototype.isFieldFormat = function (action) {
         return !!action && action.type === this.types.FIELD_FORMAT;
+    };
+    FormActionsImpl.prototype.isFieldUnformat = function (action) {
+        return !!action && action.type === this.types.FIELD_UNFORMAT;
     };
     FormActionsImpl.prototype.isValidate = function (action) {
         return !!action && action.type === this.types.VALIDATE;

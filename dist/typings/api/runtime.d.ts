@@ -9,6 +9,8 @@ export interface RdReduxForm<TFields, TMeta> {
      * Method for creating form actions and checking action type.
      */
     actions: FormActions<TFields, TMeta>;
+    /** An array of field names for the form. */
+    fields: string[];
     /**
      * Reducer for the form actions.
      * Use it in combineReducers or in the place you put your reducers.
@@ -33,5 +35,9 @@ export interface RdReduxForm<TFields, TMeta> {
          * Use it instead of dispatching setData action.
          */
         withData(data: TFields): ReduxFormState<TFields>;
+    };
+    types: {
+        fields: TFields;
+        meta: TMeta;
     };
 }

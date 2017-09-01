@@ -14,6 +14,11 @@ var RdReduxFormImpl = (function () {
     function RdReduxFormImpl(title, fieldConfiguration) {
         this.title = title;
         this.fieldConfiguration = fieldConfiguration;
+        this.types = {
+            get fields() { throw new Error("Use with Typescript typeof expression only."); },
+            get meta() { throw new Error("Use with Typescript typeof expression only."); },
+        };
+        this.fields = [];
         this.actions = new FormActionsImpl_1.FormActionsImpl(this.title);
         this.state = {
             /**
@@ -47,6 +52,7 @@ var RdReduxFormImpl = (function () {
         if (!fieldConfiguration) {
             throw new Error("Form field configuraion is not defined.");
         }
+        this.fields = Object.keys(fieldConfiguration);
     }
     RdReduxFormImpl.prototype.reducer = function (state, action) {
         state = state || this.state.empty();
