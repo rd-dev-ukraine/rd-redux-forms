@@ -46,7 +46,7 @@ export interface AnyFormBindingTypeConfiguration {
 
 export interface TypedFormBindingTypeConfiguration<TFields, TMeta> extends BindingFactory<TFields, TMeta> {
     configureFields(fieldsConfig: {
-        [P in keyof TFields]: FieldBindingFactory;
+        [P in keyof TFields]?: FieldBindingFactory;
     }): BindingFactory<TFields, TMeta>;
 }
 
