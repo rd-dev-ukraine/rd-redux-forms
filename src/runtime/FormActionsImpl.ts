@@ -11,14 +11,17 @@ import {
     RdReduxFormActionBase
 } from "../api";
 
-const SET_DATA = "SET_DATA";
-const FIELD_EDIT = "EDIT_FIELD";
-const FIELD_FORMAT = "FORMAT_FIELD";
-const VALIDATE = "VALIDATE";
-const RESET = "RESET";
-const SET_ERRORS = "SET_ERRORS";
-
 export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<TFields, TMeta> {
+    types = {
+        FIELD_EDIT: this.makeActionType("EDIT_FIELD"),
+        FIELD_FORMAT: this.makeActionType("FORMAT_FIELD"),
+        RESET: this.makeActionType("RESET"),
+        SET_DATA: this.makeActionType("SET_DATA"),
+        SET_ERRORS: this.makeActionType("SET_ERRORS"),
+        UNFORMAT: this.makeActionType("UNFORMAT"),
+        VALIDATE: this.makeActionType("VALIDATE"),
+    } ;
+
     constructor(private title: string) { }
 
     fieldEdit(field: keyof TFields, value: any, meta: TMeta = undefined as any): FieldEditAction<TFields, TMeta> {
@@ -30,7 +33,7 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
             field,
             form: this.title,
             meta,
-            type: this.makeActionType(FIELD_EDIT),
+            type: this.types.FIELD_EDIT,
             value,
         };
     }
@@ -44,7 +47,7 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
             field,
             form: this.title,
             meta,
-            type: this.makeActionType(FIELD_FORMAT),
+            type: this.types.FIELD_FORMAT,
         };
     }
 
@@ -61,7 +64,7 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
             form: this.title,
             meta,
             resetState,
-            type: this.makeActionType(SET_DATA)
+            type: this.types.SET_DATA
         };
     }
 
@@ -69,7 +72,7 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
         return {
             form: this.title,
             meta,
-            type: this.makeActionType(VALIDATE)
+            type: this.types.VALIDATE
         };
     }
 
@@ -78,7 +81,7 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
             errors,
             form: this.title,
             meta,
-            type: this.makeActionType(SET_ERRORS)
+            type: this.types.SET_ERRORS
         };
     }
 
@@ -90,32 +93,32 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
         return {
             form: this.title,
             meta,
-            type: this.makeActionType(RESET)
+            type: this.types.RESET
         };
     }
 
     isSetData(action?: Action): action is FormSetDataAction<TFields, TMeta> {
-        return !!action && action.type === this.makeActionType(SET_DATA);
+        return !!action && action.type === this.types.SET_DATA;
     }
 
     isFieldEdit(action?: Action): action is FieldEditAction<TFields, TMeta> {
-        return !!action && action.type === this.makeActionType(FIELD_EDIT);
+        return !!action && action.type === this.types.FIELD_EDIT;
     }
 
     isFieldFormat(action?: Action): action is FieldFormatAction<TFields, TMeta> {
-        return !!action && action.type === this.makeActionType(FIELD_FORMAT);
+        return !!action && action.type === this.types.FIELD_FORMAT;
     }
 
     isValidate(action?: Action): action is FormValidateAction<TMeta> {
-        return !!action && action.type === this.makeActionType(VALIDATE);
+        return !!action && action.type === this.types.VALIDATE;
     }
 
     isReset(action?: Action): action is FormResetAction<TMeta> {
-        return !!action && action.type === this.makeActionType(RESET);
+        return !!action && action.type === this.types.RESET;
     }
 
     isSetErrors(action: Action): action is FormSetErrorsAction<TFields, TMeta> {
-        return !!action && action.type === this.makeActionType(SET_ERRORS);
+        return !!action && action.type === this.types.SET_ERRORS;
     }
 
     isMyAction(action: Action): action is RdReduxFormActionBase<TMeta> {

@@ -1,14 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var SET_DATA = "SET_DATA";
-var FIELD_EDIT = "EDIT_FIELD";
-var FIELD_FORMAT = "FORMAT_FIELD";
-var VALIDATE = "VALIDATE";
-var RESET = "RESET";
-var SET_ERRORS = "SET_ERRORS";
 var FormActionsImpl = (function () {
     function FormActionsImpl(title) {
         this.title = title;
+        this.types = {
+            FIELD_EDIT: this.makeActionType("EDIT_FIELD"),
+            FIELD_FORMAT: this.makeActionType("FORMAT_FIELD"),
+            RESET: this.makeActionType("RESET"),
+            SET_DATA: this.makeActionType("SET_DATA"),
+            SET_ERRORS: this.makeActionType("SET_ERRORS"),
+            UNFORMAT: this.makeActionType("UNFORMAT"),
+            VALIDATE: this.makeActionType("VALIDATE"),
+        };
     }
     FormActionsImpl.prototype.fieldEdit = function (field, value, meta) {
         if (meta === void 0) { meta = undefined; }
@@ -19,7 +22,7 @@ var FormActionsImpl = (function () {
             field: field,
             form: this.title,
             meta: meta,
-            type: this.makeActionType(FIELD_EDIT),
+            type: this.types.FIELD_EDIT,
             value: value,
         };
     };
@@ -32,7 +35,7 @@ var FormActionsImpl = (function () {
             field: field,
             form: this.title,
             meta: meta,
-            type: this.makeActionType(FIELD_FORMAT),
+            type: this.types.FIELD_FORMAT,
         };
     };
     FormActionsImpl.prototype.setData = function (data, resetState, meta) {
@@ -46,7 +49,7 @@ var FormActionsImpl = (function () {
             form: this.title,
             meta: meta,
             resetState: resetState,
-            type: this.makeActionType(SET_DATA)
+            type: this.types.SET_DATA
         };
     };
     FormActionsImpl.prototype.validate = function (meta) {
@@ -54,7 +57,7 @@ var FormActionsImpl = (function () {
         return {
             form: this.title,
             meta: meta,
-            type: this.makeActionType(VALIDATE)
+            type: this.types.VALIDATE
         };
     };
     FormActionsImpl.prototype.setErrors = function (errors, meta) {
@@ -63,7 +66,7 @@ var FormActionsImpl = (function () {
             errors: errors,
             form: this.title,
             meta: meta,
-            type: this.makeActionType(SET_ERRORS)
+            type: this.types.SET_ERRORS
         };
     };
     FormActionsImpl.prototype.resetErrors = function (meta) {
@@ -75,26 +78,26 @@ var FormActionsImpl = (function () {
         return {
             form: this.title,
             meta: meta,
-            type: this.makeActionType(RESET)
+            type: this.types.RESET
         };
     };
     FormActionsImpl.prototype.isSetData = function (action) {
-        return !!action && action.type === this.makeActionType(SET_DATA);
+        return !!action && action.type === this.types.SET_DATA;
     };
     FormActionsImpl.prototype.isFieldEdit = function (action) {
-        return !!action && action.type === this.makeActionType(FIELD_EDIT);
+        return !!action && action.type === this.types.FIELD_EDIT;
     };
     FormActionsImpl.prototype.isFieldFormat = function (action) {
-        return !!action && action.type === this.makeActionType(FIELD_FORMAT);
+        return !!action && action.type === this.types.FIELD_FORMAT;
     };
     FormActionsImpl.prototype.isValidate = function (action) {
-        return !!action && action.type === this.makeActionType(VALIDATE);
+        return !!action && action.type === this.types.VALIDATE;
     };
     FormActionsImpl.prototype.isReset = function (action) {
-        return !!action && action.type === this.makeActionType(RESET);
+        return !!action && action.type === this.types.RESET;
     };
     FormActionsImpl.prototype.isSetErrors = function (action) {
-        return !!action && action.type === this.makeActionType(SET_ERRORS);
+        return !!action && action.type === this.types.SET_ERRORS;
     };
     FormActionsImpl.prototype.isMyAction = function (action) {
         if (action && ("" + action.type).indexOf(this.actionPrefix()) === 0) {

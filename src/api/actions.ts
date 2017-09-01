@@ -4,6 +4,16 @@ import { FormErrors } from "./common";
 
 /** TMeta is some custom metadata passed with each action but not saved in store. */
 export interface FormActions<TFields, TMeta = undefined> {
+    types: {
+        SET_DATA: string;
+        FIELD_EDIT: string;
+        FIELD_FORMAT: string;
+        VALIDATE: string;
+        SET_ERRORS: string;
+        RESET: string;
+        UNFORMAT: string;
+    };
+
     /**
      * Sets the values for the fields,
      * optionally resets form to an initial state (ie reset all edit/formatted flags on fields).

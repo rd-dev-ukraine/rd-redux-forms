@@ -2,6 +2,15 @@ import { Action } from "redux";
 import { FieldEditAction, FieldFormatAction, FormActions, FormErrors, FormResetAction, FormSetDataAction, FormSetErrorsAction, FormValidateAction, RdReduxFormActionBase } from "../api";
 export declare class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<TFields, TMeta> {
     private title;
+    types: {
+        FIELD_EDIT: string;
+        FIELD_FORMAT: string;
+        RESET: string;
+        SET_DATA: string;
+        SET_ERRORS: string;
+        UNFORMAT: string;
+        VALIDATE: string;
+    };
     constructor(title: string);
     fieldEdit(field: keyof TFields, value: any, meta?: TMeta): FieldEditAction<TFields, TMeta>;
     fieldFormat(field: keyof TFields, meta?: TMeta): FieldFormatAction<TFields, TMeta>;
