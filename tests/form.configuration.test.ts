@@ -14,9 +14,9 @@ describe("Form binding configuration", () => {
         });
 
         const binding = reactBinding
-            .allFields()
-            .edit().onChange()
-            .format().onBlur()
+            .forAllFields()
+                .edit().onChange()
+                .format().onBlur()
             .end()
             .withForm(form)
             .configureFields({

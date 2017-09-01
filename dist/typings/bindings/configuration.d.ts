@@ -1,5 +1,6 @@
 import { Dispatch } from "redux";
 import { RdReduxForm } from "../index";
+import { FieldBindingConfiguration } from "./field-binding-configuration";
 /** An property bindings (usually event handlers) for form and inputs. */
 export interface FormBindings<TFields> {
     /** An event handlers for a <form> tag */
@@ -19,7 +20,7 @@ export interface BindingFactory<TFields, TMeta> {
      */
     bind(dispatch: Dispatch<any>, meta: TMeta): FormBindings<TFields>;
 }
-export interface FormBindingConfigurationBuilder {
+export interface AnyFormBindingConfiguration {
     /**
      * Creates a binding for form with 'default' behaviour:
      * * form is validated on submit
@@ -28,10 +29,12 @@ export interface FormBindingConfigurationBuilder {
      * * field is unformatted on focus
      *
      */
-    default(): AnyFormBindingTypeConfiguration;
-}
-export interface AnyFormBindingTypeConfiguration {
+    default(): AnyFormBindingConfiguration;
     withForm<TFields, TMeta>(form: RdReduxForm<TFields, TMeta>): TypedFormBindingTypeConfiguration<TFields, TMeta>;
+    validateOnSubmit(): this;
+    forAllFields(): FieldBindingConfiguration & {
+        end(): AnyFormBindingConfiguration;
+    };
 }
 export interface TypedFormBindingTypeConfiguration<TFields, TMeta> extends BindingFactory<TFields, TMeta> {
     configureFields(fieldsConfig: {

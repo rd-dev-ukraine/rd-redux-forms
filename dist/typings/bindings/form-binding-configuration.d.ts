@@ -1,7 +1,6 @@
 import { Dispatch } from "redux";
-import { RdReduxForm } from "../../index";
-import { AnyFormBindingConfiguration, BindingFactory, FormBindings } from "../configuration";
-import { TypedFormBindingTypeConfiguration } from "../index";
+import { RdReduxForm } from "../index";
+import { AnyFormBindingConfiguration, BindingFactory, FormBindings, TypedFormBindingTypeConfiguration } from "./configuration";
 import { FieldBindingConfiguration } from "./field-binding-configuration";
 export declare class FormBindingConfiguration implements AnyFormBindingConfiguration, TypedFormBindingTypeConfiguration<any, any>, BindingFactory<any, any> {
     private allFieldConfig;

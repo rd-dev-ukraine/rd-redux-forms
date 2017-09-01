@@ -1,15 +1,17 @@
+import * as React from "react";
+
 import { Dispatch } from "redux";
-import { RdReduxForm } from "../../index";
+import { RdReduxForm } from "../index";
 import {
-    AnyFormBindingTypeConfiguration,
+    AnyFormBindingConfiguration,
     BindingFactory,
-    FormBindings
-} from "../configuration";
-import { TypedFormBindingTypeConfiguration } from "../index";
+    FormBindings,
+    TypedFormBindingTypeConfiguration
+} from "./configuration";
 import { FieldBindingConfiguration } from "./field-binding-configuration";
 
 export class FormBindingConfiguration implements
-    AnyFormBindingTypeConfiguration,
+    AnyFormBindingConfiguration,
     TypedFormBindingTypeConfiguration<any, any>,
     BindingFactory<any, any> {
 
@@ -17,6 +19,8 @@ export class FormBindingConfiguration implements
     private fieldsConfig: { [field: string]: FieldBindingConfiguration; } = {};
 
     private form: RdReduxForm<any, any> | undefined;
+
+    private validateFormOnSubmit = false;
 
     /**
      * Specifies a form for the binidng configuration.
@@ -32,10 +36,15 @@ export class FormBindingConfiguration implements
         return this;
     }
 
+    validateOnSubmit(): this {
+        this.validateFormOnSubmit = true;
+        return this;
+    }
+
     /**
      * Configure bindings for all fields.
      */
-    allFields(): FieldBindingConfiguration & { end(): FormBindingConfiguration } {
+    forAllFields(): FieldBindingConfiguration & { end(): FormBindingConfiguration } {
         this.allFieldConfig = new FieldBindingConfiguration();
         (this.allFieldConfig as any).end = () => this;
 
@@ -60,18 +69,30 @@ export class FormBindingConfiguration implements
             throw new Error("Form is not attached to the binding config.");
         }
 
+        const form: RdReduxForm<any, any> = this.form;
+
         const fields = this.form.fields.reduce((result: any, field: string) => {
             const bindingFactory = (this.fieldsConfig || {})[field] || this.allFieldConfig;
-
-            result[field] = bindingFactory.build<any, any>(this.form as any, field, dispatch, meta);
+            result[field] = bindingFactory.build<any, any>(form, field, dispatch, meta);
 
             return result;
         }, {});
 
         return {
             fields,
-            form: {},
+            form: this.validateFormOnSubmit
+                ? { onSubmit: (e: React.FormEvent<any>) => dispatch(form.actions.validate(meta)) }
+                : {},
         };
+    }
+
+    default(): FormBindingConfiguration {
+        return this.validateOnSubmit()
+            .forAllFields()
+            .edit().onChange()
+            .format().onBlur()
+            .unformat().onFocus()
+            .end();
     }
 
 }

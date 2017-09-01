@@ -1,11 +1,13 @@
+import * as React from "react";
+
 import { Dispatch } from "redux";
-import { RdReduxForm } from "../../index";
+import { RdReduxForm } from "../index";
 import {
     ActionTriggerConfigurationBuilder,
     FieldActionConfigurationBuilder,
     FieldBindingFactory,
     TriggerConfigurationBuilder
-} from "../configuration";
+} from "./configuration";
 
 type FormAction = keyof FieldActionConfigurationBuilder;
 

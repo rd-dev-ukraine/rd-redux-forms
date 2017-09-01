@@ -1,4 +1,4 @@
+import { AnyFormBindingConfiguration } from "../configuration";
 import { FieldBindingConfiguration } from "./field-binding-configuration";
-import { FormBindingConfiguration } from "./form-binding-configuration";
-export declare const reactBinding: FormBindingConfiguration;
+export declare const reactBinding: AnyFormBindingConfiguration;
 export declare function field(): FieldBindingConfiguration;
