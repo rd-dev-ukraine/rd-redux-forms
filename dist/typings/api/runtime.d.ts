@@ -1,4 +1,5 @@
 import { Action } from "redux";
+import { FormBindings } from "../bindings";
 import { FormActions } from "./actions";
 import { InvalidFormInfo, ReduxFormState, ValidFormInfo } from "./common";
 /**
@@ -40,5 +41,7 @@ export interface RdReduxForm<TFields, TMeta> {
         fields: TFields;
         meta: TMeta;
         state: ReduxFormState<TFields>;
+        selectorResult: ValidFormInfo<TFields> | InvalidFormInfo<TFields>;
+        eventBindings: FormBindings<TFields>;
     };
 }

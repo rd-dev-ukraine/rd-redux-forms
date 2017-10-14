@@ -12,6 +12,7 @@ import {
     ValidFormInfo
 } from "../api";
 
+import { FormBindings } from "../bindings";
 import { FormActionsImpl } from "./FormActionsImpl";
 
 const DEFAULT_PARSE_ERROR = "Value is not valid.";
@@ -23,7 +24,13 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
 
         get meta(): TMeta { throw new Error("Use with Typescript typeof expression only."); },
 
-        get state(): ReduxFormState<TFields> { throw new Error("Use with Typescript typeof expression only."); }
+        get state(): ReduxFormState<TFields> { throw new Error("Use with Typescript typeof expression only."); },
+
+        get eventBindings(): FormBindings<TFields> { throw new Error("Use with Typescript typeof expression only."); },
+
+        get selectorResult(): ValidFormInfo<TFields> | InvalidFormInfo<TFields> {
+            throw new Error("Use with Typescript typeof expression only.");
+        }
     };
 
     fields: string[] = [];

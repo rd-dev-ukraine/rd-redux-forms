@@ -17,7 +17,11 @@ var RdReduxFormImpl = /** @class */ (function () {
         this.types = {
             get fields() { throw new Error("Use with Typescript typeof expression only."); },
             get meta() { throw new Error("Use with Typescript typeof expression only."); },
-            get state() { throw new Error("Use with Typescript typeof expression only."); }
+            get state() { throw new Error("Use with Typescript typeof expression only."); },
+            get eventBindings() { throw new Error("Use with Typescript typeof expression only."); },
+            get selectorResult() {
+                throw new Error("Use with Typescript typeof expression only.");
+            }
         };
         this.fields = [];
         this.actions = new FormActionsImpl_1.FormActionsImpl(this.title);

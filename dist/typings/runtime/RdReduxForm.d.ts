@@ -1,5 +1,6 @@
 import { Action } from "redux";
 import { FormActions, FormFieldsConfiguration, InvalidFormInfo, RdReduxForm, ReduxFormState, ValidFormInfo } from "../api";
+import { FormBindings } from "../bindings";
 export declare class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMeta> {
     private title;
     private fieldConfiguration;
@@ -7,6 +8,8 @@ export declare class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFie
         readonly fields: TFields;
         readonly meta: TMeta;
         readonly state: ReduxFormState<TFields>;
+        readonly eventBindings: FormBindings<TFields>;
+        readonly selectorResult: ValidFormInfo<TFields> | InvalidFormInfo<TFields>;
     };
     fields: string[];
     actions: FormActions<TFields, TMeta>;
