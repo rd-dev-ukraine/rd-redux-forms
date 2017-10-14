@@ -83,7 +83,7 @@ export class FieldBindingConfiguration implements
                         clearTimeout(timeoutId);
                     }
 
-                    timeoutId = setTimeout(() => resolve(v), timeout);
+                    timeoutId = setTimeout(() => resolve(v), timeout) as any;
                 });
             };
 

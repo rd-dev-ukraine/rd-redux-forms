@@ -143,7 +143,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
 
         const fields: Array<[string, FieldInfo]> =
             Object.keys(this.fieldConfiguration)
-                .map<[string, FieldInfo]>((fieldName) => {
+                .map<[string, FieldInfo]>((fieldName: keyof TFields) => {
                     const fieldConfig = this.fieldConfiguration[fieldName];
 
                     const parser = fieldConfig.parser || ((v) => v);

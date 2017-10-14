@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var field_binding_configuration_1 = require("./field-binding-configuration");
-var FormBindingConfiguration = (function () {
+var FormBindingConfiguration = /** @class */ (function () {
     function FormBindingConfiguration() {
         this.fieldsConfig = {};
         this.validateFormOnSubmit = false;

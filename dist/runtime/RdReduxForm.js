@@ -10,7 +10,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var FormActionsImpl_1 = require("./FormActionsImpl");
 var DEFAULT_PARSE_ERROR = "Value is not valid.";
-var RdReduxFormImpl = (function () {
+var RdReduxFormImpl = /** @class */ (function () {
     function RdReduxFormImpl(title, fieldConfiguration) {
         this.title = title;
         this.fieldConfiguration = fieldConfiguration;
