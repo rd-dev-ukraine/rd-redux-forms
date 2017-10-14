@@ -6,6 +6,7 @@ export declare class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFie
     types: {
         readonly fields: TFields;
         readonly meta: TMeta;
+        readonly state: ReduxFormState<TFields>;
     };
     fields: string[];
     actions: FormActions<TFields, TMeta>;
