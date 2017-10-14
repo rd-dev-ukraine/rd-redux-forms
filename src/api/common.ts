@@ -39,7 +39,7 @@ export interface ReduxFormState<T> {
  * Detailed info about form without errors.
  */
 export interface ValidFormInfo<T> {
-    /** True since form is valid. */
+    /** True if form is valid. */
     isValid: true;
 
     fields: {
@@ -53,6 +53,7 @@ export interface ValidFormInfo<T> {
 }
 
 export interface InvalidFormInfo<T> {
+    /** False for invalid form. */
     isValid: false;
 
     fields: {
@@ -72,7 +73,7 @@ export interface ValidFieldInfo {
     isParsed: true;
 
     /**
-     * False since field is valid.
+     * False if field is not valid: not parsed or has custom error set in state.
      */
     hasErrors: false;
 
