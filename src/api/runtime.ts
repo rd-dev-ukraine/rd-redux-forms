@@ -47,5 +47,6 @@ export interface RdReduxForm<TFields, TMeta> {
     types: {
         fields: TFields;
         meta: TMeta;
+        state: ReduxFormState<TFields>;
     };
 }

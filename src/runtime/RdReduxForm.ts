@@ -22,6 +22,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         get fields(): TFields { throw new Error("Use with Typescript typeof expression only."); },
 
         get meta(): TMeta { throw new Error("Use with Typescript typeof expression only."); },
+
+        get state(): ReduxFormState<TFields> { throw new Error("Use with Typescript typeof expression only."); }
     };
 
     fields: string[] = [];
