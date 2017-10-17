@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var field_binding_configuration_1 = require("./field-binding-configuration");
-var FormBindingConfiguration = /** @class */ (function () {
+var FormBindingConfiguration = (function () {
     function FormBindingConfiguration() {
         this.fieldsConfig = {};
         this.validateFormOnSubmit = false;
@@ -55,7 +55,12 @@ var FormBindingConfiguration = /** @class */ (function () {
         return {
             fields: fields,
             form: this.validateFormOnSubmit
-                ? { onSubmit: function (e) { return dispatch(form.actions.validate(meta)); } }
+                ? {
+                    onSubmit: function (e) {
+                        e.preventDefault();
+                        dispatch(form.actions.validate(meta));
+                    }
+                }
                 : {},
         };
     };

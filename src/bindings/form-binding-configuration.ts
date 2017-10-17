@@ -81,7 +81,12 @@ export class FormBindingConfiguration implements
         return {
             fields,
             form: this.validateFormOnSubmit
-                ? { onSubmit: (e: React.FormEvent<any>) => dispatch(form.actions.validate(meta)) }
+                ? {
+                    onSubmit: (e: React.FormEvent<any>) => {
+                        e.preventDefault();
+                        dispatch(form.actions.validate(meta));
+                    }
+                }
                 : {},
         };
     }

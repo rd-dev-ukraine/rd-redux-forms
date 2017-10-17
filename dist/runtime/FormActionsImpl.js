@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var FormActionsImpl = /** @class */ (function () {
+var FormActionsImpl = (function () {
     function FormActionsImpl(title) {
         this.title = title;
         this.types = {

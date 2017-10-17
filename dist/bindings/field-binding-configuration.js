@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Configures an actions dispatched in response to events for a single untyped field.
  */
-var FieldBindingConfiguration = /** @class */ (function () {
+var FieldBindingConfiguration = (function () {
     function FieldBindingConfiguration() {
         this.bindings = {};
     }
