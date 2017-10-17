@@ -171,7 +171,11 @@ var RdReduxFormImpl = (function () {
                     return result;
                 }, {}),
                 formError: (hasFormError && state.errors) ? state.errors.message : undefined,
-                isValid: false,
+                isParsed: fields.every(function (_a) {
+                    var name = _a[0], field = _a[1];
+                    return field.isParsed;
+                }),
+                isValid: false
             };
             return formInfo;
         }

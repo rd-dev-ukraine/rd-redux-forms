@@ -239,7 +239,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     return result;
                 }, {}),
                 formError: (hasFormError && state.errors) ? state.errors.message : undefined,
-                isValid: false,
+                isParsed: fields.every(([name, field]) => field.isParsed),
+                isValid: false
             };
 
             return formInfo;

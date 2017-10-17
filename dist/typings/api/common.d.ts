@@ -47,6 +47,8 @@ export interface ValidFormInfo<T> {
 export interface InvalidFormInfo<T> {
     /** False for invalid form. */
     isValid: false;
+    /** Indicates whether all fields of the form were parsed successfully. */
+    isParsed: boolean;
     fields: {
         [P in keyof T]: FieldInfo;
     };
