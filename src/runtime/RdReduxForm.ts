@@ -180,7 +180,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                                 customErrors,
                                 errors: [
                                     fieldConfig.parseError || DEFAULT_PARSE_ERROR,
-                                    ...(customErrors || [])
+                                    ...(customErrors as any [] || [])
                                 ],
                                 hasCustomErrors: customErrors !== undefined,
                                 hasParseError: true,
