@@ -199,8 +199,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                         if (customErrors) {
                             const field: ParsedFieldWithCustomErrorInfo = {
                                 errors: {
-                                    customErrors,
-                                    errors: customErrors,
+                                    customErrors: customErrors as any,
+                                    errors: customErrors as any,
                                     hasCustomErrors: true
                                 },
                                 formattedValue: formatter(parsedValue),
