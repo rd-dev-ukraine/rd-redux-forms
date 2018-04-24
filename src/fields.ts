@@ -19,7 +19,7 @@ export const fields = {
 
     int: (required: boolean = true): FieldConfiguration<number> => ({
         parser(input: string = ""): number | undefined {
-            input = input.trim();
+            input = (input || "").trim();
 
             if (!input) {
                 return required ? undefined : 0;
@@ -39,7 +39,7 @@ export const fields = {
     string: (required: boolean = true): FieldConfiguration<string | null> =>
         ({
             parser(input: string = ""): string | null | undefined {
-                input = input.trim();
+                input = (input || "").trim();
 
                 if (!input) {
                     return required ? undefined : "";
