@@ -240,7 +240,7 @@ interface EventConfig {
 }
 
 function getValueFromEvent(e: React.ChangeEvent<any> | any): any {
-    if (e && "currentTarget" in e.currentTarget && "value" in e.currentTarget) {
+    if (e && "currentTarget" in e && "value" in e.currentTarget) {
         return e.currentTarget.value;
     }
 
