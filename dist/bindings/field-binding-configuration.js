@@ -157,7 +157,7 @@ var FieldBindingConfiguration = (function () {
 }());
 exports.FieldBindingConfiguration = FieldBindingConfiguration;
 function getValueFromEvent(e) {
-    if (e && e.currentTarget && e.currentTarget.value) {
+    if (e && "currentTarget" in e.currentTarget && "value" in e.currentTarget) {
         return e.currentTarget.value;
     }
     return e;
