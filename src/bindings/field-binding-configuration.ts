@@ -44,21 +44,21 @@ export class FieldBindingConfiguration implements
     onChange(): this {
         return this.onEvent(
             "onChange",
-            (e: React.ChangeEvent<any>) => e.currentTarget.value
+            getValueFromEvent
         );
     }
 
     onFocus(): this {
         return this.onEvent(
             "onFocus",
-            (e: React.ChangeEvent<any>) => e.currentTarget.value
+            getValueFromEvent
         );
     }
 
     onBlur(): this {
         return this.onEvent(
             "onBlur",
-            (e: React.ChangeEvent<any>) => e.currentTarget.value
+            getValueFromEvent
         );
     }
 
@@ -237,4 +237,11 @@ interface FieldBindings {
 interface EventConfig {
     argToValue: (e: any) => any;
     run: (value: any) => Promise<any>;
+}
+
+function getValueFromEvent(e: React.ChangeEvent<any> | any): any {
+    if (e && e.currentTarget && e.currentTarget.value) {
+        return e.currentTarget.value;
+    }
+    return e;
 }

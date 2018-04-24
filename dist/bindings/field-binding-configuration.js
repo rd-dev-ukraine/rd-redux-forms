@@ -20,13 +20,13 @@ var FieldBindingConfiguration = (function () {
         return this.setAction("edit");
     };
     FieldBindingConfiguration.prototype.onChange = function () {
-        return this.onEvent("onChange", function (e) { return e.currentTarget.value; });
+        return this.onEvent("onChange", getValueFromEvent);
     };
     FieldBindingConfiguration.prototype.onFocus = function () {
-        return this.onEvent("onFocus", function (e) { return e.currentTarget.value; });
+        return this.onEvent("onFocus", getValueFromEvent);
     };
     FieldBindingConfiguration.prototype.onBlur = function () {
-        return this.onEvent("onBlur", function (e) { return e.currentTarget.value; });
+        return this.onEvent("onBlur", getValueFromEvent);
     };
     FieldBindingConfiguration.prototype.onEvent = function (event, argsToValue) {
         var config = this.eventConfig(event);
@@ -156,4 +156,10 @@ var FieldBindingConfiguration = (function () {
     return FieldBindingConfiguration;
 }());
 exports.FieldBindingConfiguration = FieldBindingConfiguration;
+function getValueFromEvent(e) {
+    if (e && e.currentTarget && e.currentTarget.value) {
+        return e.currentTarget.value;
+    }
+    return e;
+}
 //# sourceMappingURL=field-binding-configuration.js.map
