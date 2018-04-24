@@ -68,28 +68,23 @@ var FieldBindingConfiguration = (function () {
             throw new Error("Field is not defined.");
         }
         var eventsMap = {};
-        Object.keys(this.bindings)
-            .forEach(function (action) {
+        Object.keys(this.bindings).forEach(function (action) {
             var events = _this.getEventsOrDefault(action);
-            Object.keys(events)
-                .forEach(function (event) {
+            Object.keys(events).forEach(function (event) {
                 if (!eventsMap[event]) {
                     eventsMap[event] = {};
                 }
                 eventsMap[event][action] = events[event];
             });
         });
-        return Object.keys(eventsMap)
-            .reduce(function (fieldBindings, event) {
+        return Object.keys(eventsMap).reduce(function (fieldBindings, event) {
             var actions = eventsMap[event];
             fieldBindings[event] = function (e) {
-                Object.keys(actions)
-                    .forEach(function (action) {
+                Object.keys(actions).forEach(function (action) {
                     var config = actions[action];
                     var value = config.argToValue(e);
                     var run = config.run || (function (val) { return Promise.resolve(val); });
-                    run(value)
-                        .then(function (val) {
+                    run(value).then(function (val) {
                         switch (action) {
                             case "format": {
                                 dispatch(form.actions.fieldFormat(field, meta));
@@ -140,13 +135,22 @@ var FieldBindingConfiguration = (function () {
         if (Object.keys(events).length === 0) {
             switch (action) {
                 case "format":
-                    return this.format().onBlur().getEventsOrDefault(action);
+                    return this.format()
+                        .onBlur()
+                        .getEventsOrDefault(action);
                 case "unformat":
-                    return this.unformat().onFocus().getEventsOrDefault(action);
+                    return this.unformat()
+                        .onFocus()
+                        .getEventsOrDefault(action);
                 case "edit":
-                    return this.edit().onChange().getEventsOrDefault(action);
+                    return this.edit()
+                        .onChange()
+                        .getEventsOrDefault(action);
                 case "submit":
-                    return this.submit().onChange().throttle(1000).getEventsOrDefault(action);
+                    return this.submit()
+                        .onChange()
+                        .throttle(1000)
+                        .getEventsOrDefault(action);
                 default:
                     return {};
             }
@@ -157,7 +161,9 @@ var FieldBindingConfiguration = (function () {
 }());
 exports.FieldBindingConfiguration = FieldBindingConfiguration;
 function getValueFromEvent(e) {
-    if (e && "currentTarget" in e && "value" in e.currentTarget) {
+    if (e !== undefined &&
+        e.currentTarget !== undefined &&
+        e.currentTarget.value !== undefined) {
         return e.currentTarget.value;
     }
     return e;
