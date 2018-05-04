@@ -134,26 +134,29 @@ export class FieldBindingConfiguration
 
             const run = config.run || ((val: any) => Promise.resolve(val));
 
-            run(value).then((val: any) => {
-              switch (action) {
-                case "format": {
-                  dispatch(form.actions.fieldFormat(field, meta));
-                  break;
+            // EDIT action must be dispatched synchronously.
+            // Otherwise cursor would jump to the end of input
+            // (even if async operation not really async and promise resolves immediately).
+            if (action === "edit") {
+              dispatch(form.actions.fieldEdit(field, value, meta));
+            } else {
+              run(value).then((val: any) => {
+                switch (action) {
+                  case "format": {
+                    dispatch(form.actions.fieldFormat(field, meta));
+                    break;
+                  }
+                  case "unformat": {
+                    dispatch(form.actions.fieldUnformat(field, meta));
+                    break;
+                  }
+                  case "submit": {
+                    dispatch(form.actions.validate(meta));
+                    break;
+                  }
                 }
-                case "unformat": {
-                  dispatch(form.actions.fieldUnformat(field, meta));
-                  break;
-                }
-                case "edit": {
-                  dispatch(form.actions.fieldEdit(field, value, meta));
-                  break;
-                }
-                case "submit": {
-                  dispatch(form.actions.validate(meta));
-                  break;
-                }
-              }
-            });
+              });
+            }
           });
         };
 
