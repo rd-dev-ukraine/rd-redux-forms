@@ -4,17 +4,15 @@ import "should";
 import { createForm, fields, ValidFormInfo } from "../src";
 
 interface OneField {
-    field: number;
+    field: number | null;
 }
 
 describe("Selector", () => {
-
     const oneFieldForm = createForm<OneField>("One field form", {
         field: fields.int(true)
     });
 
     describe("fields", () => {
-
         it("should be valid for valid input", () => {
             const result = oneFieldForm.selector({
                 fields: {
@@ -29,19 +27,17 @@ describe("Selector", () => {
                 data: { field: 124 },
                 fields: {
                     field: {
-                        formattedValue: "124",
+                        data: 124,
                         hasErrors: false,
                         isParsed: true,
-                        parsedValue: 124,
                         value: "124",
                         visualState: "none"
                     }
                 },
-                isValid: true,
+                isValid: true
             };
 
             result.should.be.eql(expected);
         });
     });
-
 });
