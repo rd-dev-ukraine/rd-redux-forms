@@ -65,15 +65,13 @@ export interface ValidFieldInfo {
      * False if field is not valid: not parsed or has custom error set in state.
      */
     hasErrors: false;
+    /** Field value that used as form data. Correctly parsed and validated. */
+    data: any;
     /**
      * Value to display in editor.
+     * Converted to editor's data type.
      */
     value: any;
-    /**
-     * Value formatted with formatting function.
-     */
-    formattedValue: any;
-    parsedValue: any;
     /**
      * A value indicates how field should be displayed on UI.
      */
@@ -89,15 +87,13 @@ export interface ParsedFieldWithCustomErrorInfo {
      * False since field is valid.
      */
     hasErrors: true;
+    /** Field value that used as form data. Correctly parsed and validated. */
+    data: any;
     /**
      * Value to display in editor.
+     * Converted to editor's data type.
      */
     value: any;
-    parsedValue: any;
-    /**
-     * Value formatted with formatting function.
-     */
-    formattedValue: any;
     /**
      * A value indicates how field should be displayed on UI.
      */
@@ -105,7 +101,7 @@ export interface ParsedFieldWithCustomErrorInfo {
     /**
      * An errors for the field.
      */
-    errors: CustomFieldErrors;
+    errors: string[];
 }
 /**
  * Field with parse error.
@@ -114,33 +110,18 @@ export interface NonParsedFieldInfo {
     /** False since field is not parsed. */
     isParsed: false;
     hasErrors: true;
-    /** Value of the field to display in input. */
+    /**
+     * Value to display in editor.
+     * Converted to editor's data type.
+     */
     value: any;
     /**
      * Field errors.
      */
-    errors: ParseFieldErrors | (ParseFieldErrors & CustomFieldErrors);
+    errors: string[];
     /**
      * A value indicates how field should be displayed on UI.
      */
     visualState: FieldVisualState;
-}
-export interface FieldErrors {
-    /** Array of combined custom and parse errors. */
-    errors: string[];
-}
-export interface CustomFieldErrors extends FieldErrors {
-    /** True if field has custom errors set. */
-    hasCustomErrors: true;
-    /**
-     * Array of custom errors.
-     */
-    customErrors: string[];
-}
-export interface ParseFieldErrors extends FieldErrors {
-    /** True if field has parse error. */
-    hasParseError: true;
-    /** A parse error. */
-    parseError: string;
 }
 export declare type FieldVisualState = "none" | "valid" | "invalid";

@@ -15,18 +15,23 @@ import {
 import { FormBindings } from "../bindings";
 import { FormActionsImpl } from "./FormActionsImpl";
 
-const DEFAULT_PARSE_ERROR = "Value is not valid.";
-
 export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMeta> {
-
     types = {
-        get fields(): TFields { throw new Error("Use with Typescript typeof expression only."); },
+        get fields(): TFields {
+            throw new Error("Use with Typescript typeof expression only.");
+        },
 
-        get meta(): TMeta { throw new Error("Use with Typescript typeof expression only."); },
+        get meta(): TMeta {
+            throw new Error("Use with Typescript typeof expression only.");
+        },
 
-        get state(): ReduxFormState<TFields> { throw new Error("Use with Typescript typeof expression only."); },
+        get state(): ReduxFormState<TFields> {
+            throw new Error("Use with Typescript typeof expression only.");
+        },
 
-        get eventBindings(): FormBindings<TFields> { throw new Error("Use with Typescript typeof expression only."); },
+        get eventBindings(): FormBindings<TFields> {
+            throw new Error("Use with Typescript typeof expression only.");
+        },
 
         get selectorResult(): ValidFormInfo<TFields> | InvalidFormInfo<TFields> {
             throw new Error("Use with Typescript typeof expression only.");
@@ -78,7 +83,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
     }
 
     reducer<TState extends ReduxFormState<TFields>>(state: TState, action: Action): TState {
-        state = state || this.state.empty();
+        state = state || (this.state.empty() as TState);
 
         if (this.actions.isSetData(action)) {
             return {
@@ -92,7 +97,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         }
 
         if (this.actions.isFieldEdit(action)) {
-            state.formatted.delete(action.field);
+            state.formatted.delete(action.field as string);
             return {
                 ...(state as any),
                 fields: {
@@ -100,14 +105,14 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     [action.field]: action.value
                 },
                 formatted: new Set<string>(state.formatted),
-                touched: state.touched.add(action.field)
+                touched: state.touched.add(action.field as string)
             };
         }
 
         if (this.actions.isFieldFormat(action)) {
             return {
                 ...(state as any),
-                formatted: state.formatted.add(action.field)
+                formatted: state.formatted.add(action.field as string)
             };
         }
 
@@ -143,91 +148,76 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
 
     selector(
         state: ReduxFormState<TFields>,
-        ...initialData: Array<Partial<TFields>>):
-        ValidFormInfo<TFields> | InvalidFormInfo<TFields> {
-
+        ...initialData: Array<Partial<TFields>>
+    ): ValidFormInfo<TFields> | InvalidFormInfo<TFields> {
         state = state || this.state.empty();
 
         const initialValues: Partial<TFields> = Object.assign({}, ...[...initialData, state.fields]);
 
-        const fields: Array<[string, FieldInfo]> =
-            Object.keys(this.fieldConfiguration)
-                .map<[string, FieldInfo]>((fieldName: keyof TFields) => {
-                    const fieldConfig = this.fieldConfiguration[fieldName];
+        const fields: Array<[string, FieldInfo]> = Object.keys(this.fieldConfiguration).map<[string, FieldInfo]>(
+            (n: string) => {
+                const fieldName: keyof TFields = n as any;
+                const fieldConfig = this.fieldConfiguration[fieldName];
 
-                    const parser = fieldConfig.parser || ((v) => v);
-                    const formatter = fieldConfig.formatter ||
-                        ((v: any) => (v === null || v === undefined || isNaN(v)) ? "" : "" + v);
+                const parser = fieldConfig.parser || ((v: any) => v);
+                const formatter =
+                    fieldConfig.formatter || ((v: any) => (v === null || v === undefined || isNaN(v) ? "" : "" + v));
 
-                    const rawValue = initialValues[fieldName] as any;
+                const rawValue = initialValues[fieldName] as any;
+
+                const showErrors =
+                    state.formatted.has(fieldName as string) ||
+                    (state.validated && !state.touched.has(fieldName as string));
+
+                try {
                     const parsedValue = parser(rawValue);
 
-                    const customErrors = !!state.errors &&
+                    // Successfully parsed
+                    const customErrors: string[] | undefined =
+                        !!state.errors &&
                         !!state.errors.fields &&
                         !!state.errors.fields[fieldName] &&
                         !!(state.errors.fields[fieldName] as any[]).length
-                        ? state.errors.fields[fieldName]
-                        : undefined;
+                            ? state.errors.fields[fieldName]
+                            : undefined;
 
-                    const showErrors = state.formatted.has(fieldName) ||
-                        (state.validated && !state.touched.has(fieldName));
-
-                    // Non parsed field info
-                    if (parsedValue === undefined) {
-
-                        const field: NonParsedFieldInfo = {
-                            errors: {
-                                customErrors,
-                                errors: [
-                                    fieldConfig.parseError || DEFAULT_PARSE_ERROR,
-                                    ...(customErrors || [])
-                                ],
-                                hasCustomErrors: customErrors !== undefined,
-                                hasParseError: true,
-                                parseError: fieldConfig.parseError || DEFAULT_PARSE_ERROR
-                            },
+                    if (customErrors) {
+                        // Parsed but has custom error set field
+                        const field: ParsedFieldWithCustomErrorInfo = {
+                            errors: customErrors,
+                            data: parsedValue,
                             hasErrors: true,
-                            isParsed: false,
-                            value: rawValue,
+                            isParsed: true,
+                            value: formatter(parsedValue),
                             visualState: showErrors ? "invalid" : "none"
                         };
 
                         return [fieldName, field];
-
                     } else {
-                        // Parsed field with custom errors
-                        if (customErrors) {
-                            const field: ParsedFieldWithCustomErrorInfo = {
-                                errors: {
-                                    customErrors,
-                                    errors: customErrors,
-                                    hasCustomErrors: true
-                                },
-                                formattedValue: formatter(parsedValue),
-                                hasErrors: true,
-                                isParsed: true,
-                                parsedValue,
-                                value: rawValue,
-                                visualState: showErrors ? "invalid" : "none"
-                            };
+                        // Valid field info
+                        const field: ValidFieldInfo = {
+                            value: formatter(parsedValue),
+                            hasErrors: false,
+                            isParsed: true,
+                            data: parsedValue,
+                            visualState: showErrors ? "valid" : "none"
+                        };
 
-                            return [fieldName, field];
-
-                        } else {
-                            // Valid field info
-                            const field: ValidFieldInfo = {
-                                formattedValue: formatter(parsedValue),
-                                hasErrors: false,
-                                isParsed: true,
-                                parsedValue,
-                                value: rawValue,
-                                visualState: showErrors ? "valid" : "none"
-                            };
-
-                            return [fieldName, field];
-                        }
+                        return [fieldName, field];
                     }
-                });
+                } catch (e) {
+                    const field: NonParsedFieldInfo = {
+                        errors: [e.message],
+                        hasErrors: true,
+                        isParsed: false,
+                        value: rawValue,
+                        visualState: showErrors ? "invalid" : "none"
+                    };
+
+                    return [fieldName, field] as any;
+                }
+            }
+        );
 
         const isFormValid = fields.every(([_, field]) => !field.hasErrors);
         const hasFormError = state.errors && state.errors.message && state.errors.message.length;
@@ -238,7 +228,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     result[fieldName] = field;
                     return result;
                 }, {}),
-                formError: (hasFormError && state.errors) ? state.errors.message : undefined,
+                formError: hasFormError && state.errors ? state.errors.message : undefined,
                 isParsed: fields.every(([name, field]) => field.isParsed),
                 isValid: false
             };
@@ -248,7 +238,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
             const formInfo: ValidFormInfo<TFields> = {
                 data: fields.reduce<any>((result: any, [fieldName, field]) => {
                     if (field.isParsed) {
-                        result[fieldName] = field.parsedValue;
+                        result[fieldName] = field.data;
                     }
                     return result;
                 }, {}),
@@ -256,7 +246,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     result[fieldName] = field;
                     return result;
                 }, {}),
-                isValid: true,
+                isValid: true
             };
 
             return formInfo;

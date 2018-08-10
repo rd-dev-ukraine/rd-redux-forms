@@ -29,7 +29,7 @@ export declare class FieldBindingConfiguration implements FieldActionConfigurati
      * @returns An object contains a map of event handlers for react inputs.
      */
     build<TFields, TMeta>(form: RdReduxForm<TFields, TMeta>, field: keyof TFields, dispatch: Dispatch<any>, meta: TMeta): any;
-    private setAction(action);
-    private eventConfig(event);
-    private getEventsOrDefault(action);
+    private setAction;
+    private eventConfig;
+    private getEventsOrDefault;
 }

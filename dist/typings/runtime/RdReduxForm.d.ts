@@ -14,7 +14,14 @@ export declare class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFie
     fields: string[];
     actions: FormActions<TFields, TMeta>;
     state: {
+        /**
+         * Gets the state for the form without data.
+         */
         empty(): ReduxFormState<TFields>;
+        /**
+         * Gets the state for the form with data.
+         * Do the same thing as dispatching setData action with resetting, but can be used in reducer.
+         */
         withData(data: TFields): ReduxFormState<TFields>;
     };
     constructor(title: string, fieldConfiguration: FormFieldsConfiguration<TFields>);

@@ -8,9 +8,7 @@ export interface FormErrors<T> {
     message?: string[];
 
     /** Fields errors */
-    fields?: {
-        [P in keyof T]?: string[];
-    };
+    fields?: { [P in keyof T]?: string[] };
 }
 
 /**
@@ -18,7 +16,7 @@ export interface FormErrors<T> {
  */
 export interface ReduxFormState<T> {
     /** Field values. */
-    fields: {[P in keyof T]: any };
+    fields: { [P in keyof T]: any };
 
     /** All fields were changed since last validation or reset. */
     touched: Set<string>;
@@ -42,9 +40,7 @@ export interface ValidFormInfo<T> {
     /** True if form is valid. */
     isValid: true;
 
-    fields: {
-        [P in keyof T]: ValidFieldInfo;
-    };
+    fields: { [P in keyof T]: ValidFieldInfo };
 
     /**
      * Parsed form data.
@@ -59,9 +55,7 @@ export interface InvalidFormInfo<T> {
     /** Indicates whether all fields of the form were parsed successfully. */
     isParsed: boolean;
 
-    fields: {
-        [P in keyof T]: FieldInfo;
-    };
+    fields: { [P in keyof T]: FieldInfo };
 
     formError?: string[];
 }
@@ -80,17 +74,14 @@ export interface ValidFieldInfo {
      */
     hasErrors: false;
 
+    /** Field value that used as form data. Correctly parsed and validated. */
+    data: any;
+
     /**
      * Value to display in editor.
+     * Converted to editor's data type.
      */
     value: any;
-
-    /**
-     * Value formatted with formatting function.
-     */
-    formattedValue: any;
-
-    parsedValue: any;
 
     /**
      * A value indicates how field should be displayed on UI.
@@ -110,17 +101,14 @@ export interface ParsedFieldWithCustomErrorInfo {
      */
     hasErrors: true;
 
+    /** Field value that used as form data. Correctly parsed and validated. */
+    data: any;
+
     /**
      * Value to display in editor.
+     * Converted to editor's data type.
      */
     value: any;
-
-    parsedValue: any;
-
-    /**
-     * Value formatted with formatting function.
-     */
-    formattedValue: any;
 
     /**
      * A value indicates how field should be displayed on UI.
@@ -130,7 +118,7 @@ export interface ParsedFieldWithCustomErrorInfo {
     /**
      * An errors for the field.
      */
-    errors: CustomFieldErrors;
+    errors: string[];
 }
 
 /**
@@ -142,39 +130,21 @@ export interface NonParsedFieldInfo {
 
     hasErrors: true;
 
-    /** Value of the field to display in input. */
+    /**
+     * Value to display in editor.
+     * Converted to editor's data type.
+     */
     value: any;
 
     /**
      * Field errors.
      */
-    errors: ParseFieldErrors | (ParseFieldErrors & CustomFieldErrors);
+    errors: string[];
 
     /**
      * A value indicates how field should be displayed on UI.
      */
     visualState: FieldVisualState;
-}
-
-export interface FieldErrors {
-    /** Array of combined custom and parse errors. */
-    errors: string[];
-}
-
-export interface CustomFieldErrors extends FieldErrors {
-    /** True if field has custom errors set. */
-    hasCustomErrors: true;
-    /**
-     * Array of custom errors.
-     */
-    customErrors: string[];
-}
-
-export interface ParseFieldErrors extends FieldErrors {
-    /** True if field has parse error. */
-    hasParseError: true;
-    /** A parse error. */
-    parseError: string;
 }
 
 export type FieldVisualState = "none" | "valid" | "invalid";

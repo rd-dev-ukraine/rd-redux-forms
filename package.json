@@ -25,6 +25,7 @@
     "@types/mocha": "^2.2.42",
     "@types/react": "^16.4.9",
     "@types/should": "^11.2.0",
+    "redux": "^4.0.0",
     "mocha": "^3.5.0",
     "should": "^12.0.0",
     "ts-node": "^7.0.0",
@@ -32,7 +33,6 @@
     "typescript": "^3.0.1"
   },
   "peerDependencies": {
-    "react": "^16.4.2",
-    "redux": "^4.0.0"
+    "react": "^16.4.2"
   }
 }

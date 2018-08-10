@@ -28,6 +28,6 @@ export declare class FormActionsImpl<TFields, TMeta = undefined> implements Form
     isReset(action?: Action): action is FormResetAction<TMeta>;
     isSetErrors(action: Action): action is FormSetErrorsAction<TFields, TMeta>;
     isMyAction(action: Action): action is RdReduxFormActionBase<TMeta>;
-    private makeActionType(action);
-    private actionPrefix();
+    private makeActionType;
+    private actionPrefix;
 }
