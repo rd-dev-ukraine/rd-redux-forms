@@ -1,6 +1,6 @@
 {
   "name": "rd-redux-forms",
-  "version": "1.0.8",
+  "version": "2.0.0",
   "private": false,
   "description": "HTML forms for react and redux",
   "keywords": [
@@ -21,21 +21,18 @@
   "author": "rd-dev",
   "license": "MIT",
   "types": "dist/typings/index.d.ts",
-  "dependencies": {
-    "redux": "^3.7.2"
-  },
   "devDependencies": {
     "@types/mocha": "^2.2.42",
-    "@types/react": "^16.0.5",
-    "@types/redux": "^3.6.0",
+    "@types/react": "^16.4.9",
     "@types/should": "^11.2.0",
     "mocha": "^3.5.0",
     "should": "^12.0.0",
-    "ts-node": "^3.3.0",
-    "tslint": "^5.6.0",
-    "typescript": "^2.4.2"
+    "ts-node": "^7.0.0",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1"
   },
   "peerDependencies": {
-    "react": "^15.6.1"
+    "react": "^16.4.2",
+    "redux": "^4.0.0"
   }
 }
