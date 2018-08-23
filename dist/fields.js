@@ -54,13 +54,13 @@ exports.fields = {
         return ({
             parser: function (input) {
                 if (input === void 0) { input = ""; }
-                input = (input || "").trim();
-                if (!input && required) {
+                input = input || "";
+                if (!input.trim() && required) {
                     throw new Error(errorMessage || "Value is required");
                 }
                 return input;
             },
-            formatter: function (input) { return (input || "").trim(); }
+            formatter: function (input) { return input || ""; }
         });
     }
 };

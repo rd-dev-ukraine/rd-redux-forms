@@ -56,14 +56,14 @@ export const fields = {
 
     string: (required: boolean = true, errorMessage?: string): FieldConfiguration<string | null> => ({
         parser(input: string = ""): string {
-            input = (input || "").trim();
+            input = input || "";
 
-            if (!input && required) {
+            if (!input.trim() && required) {
                 throw new Error(errorMessage || "Value is required");
             }
 
             return input;
         },
-        formatter: (input: string | null): string => (input || "").trim()
+        formatter: (input: string | null): string => input || ""
     })
 };
