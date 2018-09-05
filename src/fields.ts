@@ -28,7 +28,7 @@ export const fields = {
     /** Binds a integer number to a text input. */
     int: (required: boolean = true, errorMessage?: string): FieldConfiguration<number | null> => ({
         parser(input: string = ""): number | null {
-            input = (`${input}` || "").trim();
+            input = `${input || ""}`.trim();
 
             if (!input) {
                 if (required) {

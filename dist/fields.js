@@ -28,7 +28,7 @@ exports.fields = {
         return ({
             parser: function (input) {
                 if (input === void 0) { input = ""; }
-                input = ("" + input || "").trim();
+                input = ("" + (input || "")).trim();
                 if (!input) {
                     if (required) {
                         throw new Error(errorMessage || "Value is required.");
