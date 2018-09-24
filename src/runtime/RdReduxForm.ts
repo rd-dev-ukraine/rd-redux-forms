@@ -82,7 +82,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         this.fields = Object.keys(fieldConfiguration);
     }
 
-    reducer<TState extends ReduxFormState<TFields>>(state: TState, action: Action): TState {
+    reducer = <TState extends ReduxFormState<TFields>>(state: TState, action: Action): TState => {
         state = state || (this.state.empty() as TState);
 
         if (this.actions.isSetData(action)) {
@@ -146,10 +146,10 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         return state;
     }
 
-    selector(
+    selector = (
         state: ReduxFormState<TFields>,
         ...initialData: Array<Partial<TFields>>
-    ): ValidFormInfo<TFields> | InvalidFormInfo<TFields> {
+    ): ValidFormInfo<TFields> | InvalidFormInfo<TFields> => {
         state = state || this.state.empty();
 
         const initialValues: Partial<TFields> = Object.assign({}, ...[...initialData, state.fields]);

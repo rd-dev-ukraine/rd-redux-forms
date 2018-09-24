@@ -25,6 +25,6 @@ export declare class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFie
         withData(data: TFields): ReduxFormState<TFields>;
     };
     constructor(title: string, fieldConfiguration: FormFieldsConfiguration<TFields>);
-    reducer<TState extends ReduxFormState<TFields>>(state: TState, action: Action): TState;
-    selector(state: ReduxFormState<TFields>, ...initialData: Array<Partial<TFields>>): ValidFormInfo<TFields> | InvalidFormInfo<TFields>;
+    reducer: <TState extends ReduxFormState<TFields>>(state: TState, action: Action<any>) => TState;
+    selector: (state: ReduxFormState<TFields>, ...initialData: Partial<TFields>[]) => ValidFormInfo<TFields> | InvalidFormInfo<TFields>;
 }
