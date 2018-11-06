@@ -24,7 +24,7 @@ export interface ReduxFormState<T> {
         [P in keyof T]?: any;
     };
     /** All fields were formatted since last validation or reset. */
-    formatted: {
+    editing: {
         [P in keyof T]?: any;
     };
     /**

@@ -7,8 +7,8 @@ export interface FormActions<TFields, TMeta = undefined> {
     types: {
         SET_DATA: string;
         FIELD_EDIT: string;
-        FIELD_FORMAT: string;
-        FIELD_UNFORMAT: string;
+        FIELD_START_EDITING: string;
+        FIELD_END_EDITING: string;
         VALIDATE: string;
         SET_ERRORS: string;
         RESET: string;
@@ -26,14 +26,14 @@ export interface FormActions<TFields, TMeta = undefined> {
     fieldEdit(field: keyof TFields, value: any, meta?: TMeta): FieldEditAction<TFields, TMeta>;
 
     /**
-     * Formats a value for the field using field formatting function.
+     * Begins editing value of the field for editors which supports intermediate state.
      */
-    fieldFormat(field: keyof TFields, meta?: TMeta): FieldFormatAction<TFields, TMeta>;
+    fieldStartEditing(field: keyof TFields, meta?: TMeta): FieldStartEditingAction<TFields, TMeta>;
 
     /**
-     * Prepares an input for editing by optionally replacing a value with another more convenient for editing.
+     * Ends field value editing for editors which supports intermediate state.
      */
-    fieldUnformat(field: keyof TFields, meta?: TMeta): FieldUnformatAction<TFields, TMeta>;
+    fieldEndEditing(field: keyof TFields, meta?: TMeta): FieldEndEditingAction<TFields, TMeta>;
 
     /**
      * Initiates form saving process.
@@ -78,12 +78,12 @@ export interface FormActions<TFields, TMeta = undefined> {
     /**
      * Checks if action is field formatting action.
      */
-    isFieldFormat(action?: Action): action is FieldFormatAction<TFields, TMeta>;
+    isFieldStartEditing(action?: Action): action is FieldStartEditingAction<TFields, TMeta>;
 
     /**
      * Checks if action is field un-formatting action.
      */
-    isFieldUnformat(action?: Action): action is FieldUnformatAction<TFields, TMeta>;
+    isFieldEndEditing(action?: Action): action is FieldEndEditingAction<TFields, TMeta>;
 
     /**
      * Checks if action is form validation action.
@@ -116,17 +116,17 @@ export interface FieldEditAction<TFields, TMeta = undefined> extends RdReduxForm
     value: any;
 }
 
-export interface FieldFormatAction<TFields, TMeta = undefined> extends RdReduxFormActionBase<TMeta> {
+export interface FieldStartEditingAction<TFields, TMeta = undefined> extends RdReduxFormActionBase<TMeta> {
     field: keyof TFields;
 }
 
-export interface FieldUnformatAction<TFields, TMeta = undefined> extends RdReduxFormActionBase<TMeta> {
+export interface FieldEndEditingAction<TFields, TMeta = undefined> extends RdReduxFormActionBase<TMeta> {
     field: keyof TFields;
 }
 
-export interface FormValidateAction<TMeta = undefined> extends RdReduxFormActionBase<TMeta> { }
+export interface FormValidateAction<TMeta = undefined> extends RdReduxFormActionBase<TMeta> {}
 
-export interface FormResetAction<TMeta = undefined> extends RdReduxFormActionBase<TMeta> { }
+export interface FormResetAction<TMeta = undefined> extends RdReduxFormActionBase<TMeta> {}
 
 export interface FormSetDataAction<TFields, TMeta = undefined> extends RdReduxFormActionBase<TMeta> {
     data: Partial<TFields>;

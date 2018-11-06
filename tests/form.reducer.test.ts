@@ -21,7 +21,7 @@ describe("Reducer test:", () => {
                 hasCustomErrors: false,
                 isParsed: true,
                 value: "1234",
-                visualState: "none"
+                visualState: "valid"
             } as FieldInfo);
         });
         it("should correctly parse string", () => {
@@ -32,7 +32,7 @@ describe("Reducer test:", () => {
                 hasCustomErrors: false,
                 isParsed: true,
                 value: "4321",
-                visualState: "none"
+                visualState: "valid"
             } as FieldInfo);
         });
 
@@ -44,7 +44,7 @@ describe("Reducer test:", () => {
                 hasCustomErrors: false,
                 isParsed: true,
                 value: "4321",
-                visualState: "valid"
+                visualState: "none"
             } as FieldInfo);
         });
     });
@@ -194,7 +194,7 @@ describe("Reducer test:", () => {
                 hasCustomErrors: false,
                 isParsed: false,
                 value: undefined,
-                visualState: "none"
+                visualState: "invalid"
             } as FieldInfo);
         });
 
@@ -207,15 +207,12 @@ describe("Reducer test:", () => {
                 hasCustomErrors: false,
                 isParsed: true,
                 value: "123",
-                visualState: "none"
+                visualState: "valid"
             } as FieldInfo);
         });
 
         it("has edit field with valid value", () => {
-            const result = applyActions([
-                form.actions.fieldEdit("field", 123, undefined),
-                form.actions.fieldFormat("field", undefined)
-            ]);
+            const result = applyActions([form.actions.fieldEdit("field", 123, undefined)]);
 
             result.isValid.should.be.true();
             result.fields.field.should.eql({
@@ -236,15 +233,12 @@ describe("Reducer test:", () => {
                 hasCustomErrors: false,
                 isParsed: false,
                 value: "inv",
-                visualState: "none"
+                visualState: "invalid"
             } as FieldInfo);
         });
 
         it("has edit field with invalid value", () => {
-            const result = applyActions([
-                form.actions.fieldEdit("field", "inv", undefined),
-                form.actions.fieldFormat("field", undefined)
-            ]);
+            const result = applyActions([form.actions.fieldEdit("field", "inv", undefined)]);
 
             result.isValid.should.be.false();
             result.fields.field.should.eql({
@@ -256,10 +250,9 @@ describe("Reducer test:", () => {
             } as FieldInfo);
         });
 
-        it("editing field with invalid value", () => {
+        it("editing field with invalid value set valid value", () => {
             const result = applyActions([
                 form.actions.fieldEdit("field", "inv", undefined),
-                form.actions.fieldFormat("field", undefined),
                 form.actions.fieldEdit("field", "1234", undefined)
             ]);
 
@@ -269,7 +262,7 @@ describe("Reducer test:", () => {
                 hasCustomErrors: false,
                 isParsed: true,
                 value: "1234",
-                visualState: "none"
+                visualState: "valid"
             } as FieldInfo);
         });
     });
@@ -339,14 +332,13 @@ describe("Reducer test:", () => {
                 hasCustomErrors: true,
                 isParsed: true,
                 value: "123",
-                visualState: "none"
+                visualState: "valid"
             } as FieldInfo);
         });
     });
 
     function applyActions(actions: Action[], state = form.state.empty()): typeof form.types.selectorResult {
         const newState = actions.reduce((intermediateState, action) => form.reducer(intermediateState, action), state);
-
         return form.selector(newState);
     }
 });

@@ -9,8 +9,8 @@ export declare class FieldBindingConfiguration implements FieldActionConfigurati
     private lastAction;
     private lastEvent;
     submit(): this;
-    format(): this;
-    unformat(): this;
+    startEditing(): this;
+    endEditing(): this;
     edit(): this;
     onChange(): this;
     onFocus(): this;

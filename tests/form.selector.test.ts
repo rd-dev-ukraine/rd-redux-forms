@@ -15,10 +15,10 @@ describe("Selector", () => {
     describe("fields", () => {
         it("should be valid for valid input", () => {
             const result = oneFieldForm.selector({
+                editing: {},
                 fields: {
                     field: "124"
                 },
-                formatted: {},
                 touched: {},
                 validated: false
             });

@@ -49,8 +49,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
          */
         empty(): ReduxFormState<TFields> {
             return {
+                editing: {},
                 fields: {} as any,
-                formatted: {},
                 touched: {},
                 validated: false
             };
@@ -62,9 +62,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
          */
         withData(data: TFields): ReduxFormState<TFields> {
             return {
-                errors: undefined,
+                editing: {},
                 fields: data,
-                formatted: {},
                 touched: {},
                 validated: false
             };
@@ -89,37 +88,40 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         if (this.actions.isSetData(action)) {
             return {
                 ...(state as any),
+                editing: action.resetState ? {} : state.editing,
                 errors: action.resetState ? undefined : state.errors,
                 fields: action.data,
-                formatted: action.resetState ? {} : state.formatted,
                 touched: action.resetState ? {} : state.touched,
                 validated: action.resetState ? false : state.validated
             };
         }
 
         if (this.actions.isFieldEdit(action)) {
-            const formatted = { ...(state.formatted as any) };
-            delete formatted[action.field];
-
             return {
                 ...(state as any),
                 fields: {
                     ...(state.fields as any),
                     [action.field]: action.value
                 },
-                formatted,
                 touched: { ...(state.touched as any), [action.field]: true }
             };
         }
 
-        if (this.actions.isFieldFormat(action)) {
+        if (this.actions.isFieldStartEditing(action)) {
             return {
                 ...(state as any),
-                formatted: {
-                    ...(state.formatted as any),
+                editing: {
+                    ...(state.editing as any),
                     [action.field]: true
                 }
             };
+        }
+
+        if (this.actions.isFieldEndEditing(action)) {
+            const editing = { ...(state.editing as any) };
+            delete editing[action.field];
+
+            return { ...(state as any), editing };
         }
 
         if (this.actions.isValidate(action)) {
@@ -173,7 +175,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     fieldConfig.formatter || ((v: any) => (v === null || v === undefined || isNaN(v) ? "" : "" + v));
 
                 const rawValue = initialValues[fieldName] as any;
-                const isFieldFormatted = !!state.formatted[fieldName];
+                const isFieldEditing = !!state.editing[fieldName];
                 const isFieldTouched = !!state.touched[fieldName];
 
                 // Successfully parsed
@@ -196,7 +198,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             hasCustomErrors: true,
                             isParsed: true,
                             value: formatter(parsedValue),
-                            visualState: isFieldTouched ? (isFieldFormatted ? "valid" : "none") : "invalid"
+                            visualState: calculateFieldVisualState(true, true, isFieldTouched, isFieldEditing)
                         };
 
                         return [fieldName, field];
@@ -207,7 +209,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             hasCustomErrors: false,
                             isParsed: true,
                             value: formatter(parsedValue),
-                            visualState: isFieldFormatted ? (isFieldTouched ? "valid" : "none") : "none"
+                            visualState: calculateFieldVisualState(true, false, isFieldTouched, isFieldEditing)
                         };
 
                         return [fieldName, field];
@@ -218,7 +220,12 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                         hasCustomErrors: !!fieldCustomErrors,
                         isParsed: false,
                         value: rawValue,
-                        visualState: isFieldTouched ? (isFieldFormatted ? "invalid" : "none") : "none"
+                        visualState: calculateFieldVisualState(
+                            false,
+                            !!fieldCustomErrors,
+                            isFieldTouched,
+                            isFieldEditing
+                        )
                     };
 
                     return [fieldName, field] as any;
@@ -266,15 +273,15 @@ function calculateFieldVisualState(
     isParsed: boolean,
     hasCustomError: boolean,
     isFieldTouched: boolean,
-    isFieldEdit: boolean
+    isFieldEditing: boolean
 ): FieldVisualState {
     if (!isParsed) {
-        return isFieldEdit ? "none" : "invalid";
+        return isFieldEditing ? "none" : "invalid";
     } else {
         if (hasCustomError) {
-            return isFieldTouched ? "invalid" : isFieldEdit ? "none" : "valid";
+            return isFieldTouched ? (isFieldEditing ? "none" : "valid") : "invalid";
         } else {
-            return isFieldEdit ? "none" : isFieldTouched ? "valid" : "none";
+            return isFieldEditing ? "none" : isFieldTouched ? "valid" : "none";
         }
     }
 }

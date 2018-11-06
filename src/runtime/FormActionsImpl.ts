@@ -1,8 +1,8 @@
 import { Action } from "redux";
 import {
     FieldEditAction,
-    FieldFormatAction,
-    FieldUnformatAction,
+    FieldEndEditingAction,
+    FieldStartEditingAction,
     FormActions,
     FormErrors,
     FormResetAction,
@@ -15,15 +15,15 @@ import {
 export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<TFields, TMeta> {
     types = {
         FIELD_EDIT: this.makeActionType("EDIT_FIELD"),
-        FIELD_FORMAT: this.makeActionType("FORMAT_FIELD"),
-        FIELD_UNFORMAT: this.makeActionType("UNFORMAT_FIELD"),
+        FIELD_END_EDITING: this.makeActionType("EDN_FIELD_EDITING"),
+        FIELD_START_EDITING: this.makeActionType("START_FIELD_EDITING"),
         RESET: this.makeActionType("RESET"),
         SET_DATA: this.makeActionType("SET_DATA"),
         SET_ERRORS: this.makeActionType("SET_ERRORS"),
-        VALIDATE: this.makeActionType("VALIDATE"),
-    } ;
+        VALIDATE: this.makeActionType("VALIDATE")
+    };
 
-    constructor(private title: string) { }
+    constructor(private title: string) {}
 
     fieldEdit(field: keyof TFields, value: any, meta: TMeta = undefined as any): FieldEditAction<TFields, TMeta> {
         if (!field) {
@@ -35,11 +35,11 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
             form: this.title,
             meta,
             type: this.types.FIELD_EDIT,
-            value,
+            value
         };
     }
 
-    fieldFormat(field: keyof TFields, meta: TMeta = undefined as any): FieldFormatAction<TFields, TMeta> {
+    fieldStartEditing(field: keyof TFields, meta: TMeta = undefined as any): FieldStartEditingAction<TFields, TMeta> {
         if (!field) {
             throw new Error("Field is not defined.");
         }
@@ -48,11 +48,11 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
             field,
             form: this.title,
             meta,
-            type: this.types.FIELD_FORMAT,
+            type: this.types.FIELD_START_EDITING
         };
     }
 
-    fieldUnformat(field: keyof TFields, meta: TMeta = undefined as any): FieldUnformatAction<TFields, TMeta> {
+    fieldEndEditing(field: keyof TFields, meta: TMeta = undefined as any): FieldEndEditingAction<TFields, TMeta> {
         if (!field) {
             throw new Error("Field is not defined.");
         }
@@ -61,14 +61,15 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
             field,
             form: this.title,
             meta,
-            type: this.types.FIELD_UNFORMAT,
+            type: this.types.FIELD_END_EDITING
         };
     }
 
     setData(
         data: Partial<TFields>,
         resetState: boolean = false,
-        meta: TMeta = undefined as any): FormSetDataAction<TFields, TMeta> {
+        meta: TMeta = undefined as any
+    ): FormSetDataAction<TFields, TMeta> {
         if (!data) {
             throw new Error("Data is not defined.");
         }
@@ -119,12 +120,12 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
         return !!action && action.type === this.types.FIELD_EDIT;
     }
 
-    isFieldFormat(action?: Action): action is FieldFormatAction<TFields, TMeta> {
-        return !!action && action.type === this.types.FIELD_FORMAT;
+    isFieldStartEditing(action?: Action): action is FieldStartEditingAction<TFields, TMeta> {
+        return !!action && action.type === this.types.FIELD_START_EDITING;
     }
 
-    isFieldUnformat(action?: Action): action is FieldUnformatAction<TFields, TMeta> {
-        return !!action && action.type === this.types.FIELD_UNFORMAT;
+    isFieldEndEditing(action?: Action): action is FieldEndEditingAction<TFields, TMeta> {
+        return !!action && action.type === this.types.FIELD_END_EDITING;
     }
 
     isValidate(action?: Action): action is FormValidateAction<TMeta> {

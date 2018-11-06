@@ -10,11 +10,11 @@ var FieldBindingConfiguration = /** @class */ (function () {
     FieldBindingConfiguration.prototype.submit = function () {
         return this.setAction("submit");
     };
-    FieldBindingConfiguration.prototype.format = function () {
-        return this.setAction("format");
+    FieldBindingConfiguration.prototype.startEditing = function () {
+        return this.setAction("startEditing");
     };
-    FieldBindingConfiguration.prototype.unformat = function () {
-        return this.setAction("unformat");
+    FieldBindingConfiguration.prototype.endEditing = function () {
+        return this.setAction("endEditing");
     };
     FieldBindingConfiguration.prototype.edit = function () {
         return this.setAction("edit");
@@ -93,12 +93,12 @@ var FieldBindingConfiguration = /** @class */ (function () {
                     else {
                         run(value).then(function (val) {
                             switch (action) {
-                                case "format": {
-                                    dispatch(form.actions.fieldFormat(field, meta));
+                                case "begin_edit": {
+                                    dispatch(form.actions.fieldStartEditing(field, meta));
                                     break;
                                 }
                                 case "unformat": {
-                                    dispatch(form.actions.fieldUnformat(field, meta));
+                                    dispatch(form.actions.fieldEndEditing(field, meta));
                                     break;
                                 }
                                 case "submit": {
@@ -138,12 +138,12 @@ var FieldBindingConfiguration = /** @class */ (function () {
         }
         if (Object.keys(events).length === 0) {
             switch (action) {
-                case "format":
-                    return this.format()
+                case "startEditing":
+                    return this.startEditing()
                         .onBlur()
                         .getEventsOrDefault(action);
-                case "unformat":
-                    return this.unformat()
+                case "endEditing":
+                    return this.endEditing()
                         .onFocus()
                         .getEventsOrDefault(action);
                 case "edit":
@@ -165,9 +165,7 @@ var FieldBindingConfiguration = /** @class */ (function () {
 }());
 exports.FieldBindingConfiguration = FieldBindingConfiguration;
 function getValueFromEvent(e) {
-    if (e !== undefined &&
-        e.currentTarget !== undefined &&
-        e.currentTarget.value !== undefined) {
+    if (e !== undefined && e.currentTarget !== undefined && e.currentTarget.value !== undefined) {
         return e.currentTarget.value;
     }
     return e;

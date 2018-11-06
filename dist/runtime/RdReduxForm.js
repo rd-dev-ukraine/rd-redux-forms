@@ -42,8 +42,8 @@ var RdReduxFormImpl = /** @class */ (function () {
              */
             empty: function () {
                 return {
+                    editing: {},
                     fields: {},
-                    formatted: {},
                     touched: {},
                     validated: false
                 };
@@ -54,9 +54,8 @@ var RdReduxFormImpl = /** @class */ (function () {
              */
             withData: function (data) {
                 return {
-                    errors: undefined,
+                    editing: {},
                     fields: data,
-                    formatted: {},
                     touched: {},
                     validated: false
                 };
@@ -66,15 +65,18 @@ var RdReduxFormImpl = /** @class */ (function () {
             var _a, _b, _c;
             state = state || _this.state.empty();
             if (_this.actions.isSetData(action)) {
-                return __assign({}, state, { errors: action.resetState ? undefined : state.errors, fields: action.data, formatted: action.resetState ? {} : state.formatted, touched: action.resetState ? {} : state.touched, validated: action.resetState ? false : state.validated });
+                return __assign({}, state, { editing: action.resetState ? {} : state.editing, errors: action.resetState ? undefined : state.errors, fields: action.data, touched: action.resetState ? {} : state.touched, validated: action.resetState ? false : state.validated });
             }
             if (_this.actions.isFieldEdit(action)) {
-                var formatted = __assign({}, state.formatted);
-                delete formatted[action.field];
-                return __assign({}, state, { fields: __assign({}, state.fields, (_a = {}, _a[action.field] = action.value, _a)), formatted: formatted, touched: __assign({}, state.touched, (_b = {}, _b[action.field] = true, _b)) });
+                return __assign({}, state, { fields: __assign({}, state.fields, (_a = {}, _a[action.field] = action.value, _a)), touched: __assign({}, state.touched, (_b = {}, _b[action.field] = true, _b)) });
             }
-            if (_this.actions.isFieldFormat(action)) {
-                return __assign({}, state, { formatted: __assign({}, state.formatted, (_c = {}, _c[action.field] = true, _c)) });
+            if (_this.actions.isFieldStartEditing(action)) {
+                return __assign({}, state, { editing: __assign({}, state.editing, (_c = {}, _c[action.field] = true, _c)) });
+            }
+            if (_this.actions.isFieldEndEditing(action)) {
+                var editing = __assign({}, state.editing);
+                delete editing[action.field];
+                return __assign({}, state, { editing: editing });
             }
             if (_this.actions.isValidate(action)) {
                 return __assign({}, state, { errors: undefined, formatted: {}, touched: {}, validated: true });
@@ -100,7 +102,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                 var parser = fieldConfig.parser || (function (v) { return v; });
                 var formatter = fieldConfig.formatter || (function (v) { return (v === null || v === undefined || isNaN(v) ? "" : "" + v); });
                 var rawValue = initialValues[fieldName];
-                var isFieldFormatted = !!state.formatted[fieldName];
+                var isFieldEditing = !!state.editing[fieldName];
                 var isFieldTouched = !!state.touched[fieldName];
                 // Successfully parsed
                 var fieldCustomErrors = !!state.errors &&
@@ -119,7 +121,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                             hasCustomErrors: true,
                             isParsed: true,
                             value: formatter(parsedValue),
-                            visualState: isFieldTouched ? (isFieldFormatted ? "valid" : "none") : "invalid"
+                            visualState: calculateFieldVisualState(true, true, isFieldTouched, isFieldEditing)
                         };
                         return [fieldName, field];
                     }
@@ -130,7 +132,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                             hasCustomErrors: false,
                             isParsed: true,
                             value: formatter(parsedValue),
-                            visualState: isFieldFormatted ? (isFieldTouched ? "valid" : "none") : "none"
+                            visualState: calculateFieldVisualState(true, false, isFieldTouched, isFieldEditing)
                         };
                         return [fieldName, field];
                     }
@@ -141,7 +143,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                         hasCustomErrors: !!fieldCustomErrors,
                         isParsed: false,
                         value: rawValue,
-                        visualState: isFieldTouched ? (isFieldFormatted ? "invalid" : "none") : "none"
+                        visualState: calculateFieldVisualState(false, !!fieldCustomErrors, isFieldTouched, isFieldEditing)
                     };
                     return [fieldName, field];
                 }
@@ -201,16 +203,16 @@ var RdReduxFormImpl = /** @class */ (function () {
     return RdReduxFormImpl;
 }());
 exports.RdReduxFormImpl = RdReduxFormImpl;
-function calculateFieldVisualState(isParsed, hasCustomError, isFieldTouched, isFieldEdit) {
+function calculateFieldVisualState(isParsed, hasCustomError, isFieldTouched, isFieldEditing) {
     if (!isParsed) {
-        return isFieldEdit ? "none" : "invalid";
+        return isFieldEditing ? "none" : "invalid";
     }
     else {
         if (hasCustomError) {
-            return isFieldTouched ? "invalid" : isFieldEdit ? "none" : "valid";
+            return isFieldTouched ? (isFieldEditing ? "none" : "valid") : "invalid";
         }
         else {
-            return isFieldEdit ? "none" : isFieldTouched ? "valid" : "none";
+            return isFieldEditing ? "none" : isFieldTouched ? "valid" : "none";
         }
     }
 }

@@ -10,9 +10,7 @@ export interface FormBindings<TFields> {
     form: any;
 
     /** An event handlers for each field input. */
-    fields: {
-        [P in keyof TFields]: any;
-    };
+    fields: { [P in keyof TFields]: any };
 }
 
 /** Creates a rd-redux-form bindings. */
@@ -24,7 +22,6 @@ export interface BindingFactory<TFields, TMeta> {
      * @param meta A meta object passed with each dispatched action.
      */
     bind(dispatch: Dispatch<any>, meta: TMeta): FormBindings<TFields>;
-
 }
 
 // CONFIGURATION
@@ -46,9 +43,7 @@ export interface AnyFormBindingConfiguration {
 }
 
 export interface TypedFormBindingTypeConfiguration<TFields, TMeta> extends BindingFactory<TFields, TMeta> {
-    configureFields(fieldsConfig: {
-        [P in keyof TFields]?: FieldBindingFactory;
-    }): BindingFactory<TFields, TMeta>;
+    configureFields(fieldsConfig: { [P in keyof TFields]?: FieldBindingFactory }): BindingFactory<TFields, TMeta>;
 }
 
 export interface FieldBindingFactory {
@@ -62,8 +57,8 @@ export interface FieldBindingFactory {
 
 export interface FieldActionConfigurationBuilder {
     submit(): FieldActionConfigurationBuilder & ActionTriggerConfigurationBuilder;
-    format(): FieldActionConfigurationBuilder & ActionTriggerConfigurationBuilder;
-    unformat(): FieldActionConfigurationBuilder & ActionTriggerConfigurationBuilder;
+    startEditing(): FieldActionConfigurationBuilder & ActionTriggerConfigurationBuilder;
+    endEditing(): FieldActionConfigurationBuilder & ActionTriggerConfigurationBuilder;
     edit(): FieldActionConfigurationBuilder & ActionTriggerConfigurationBuilder;
 }
 
@@ -71,8 +66,10 @@ export interface ActionTriggerConfigurationBuilder {
     onChange(): TriggerConfigurationBuilder & FieldActionConfigurationBuilder;
     onFocus(): TriggerConfigurationBuilder & FieldActionConfigurationBuilder;
     onBlur(): TriggerConfigurationBuilder & FieldActionConfigurationBuilder;
-    onEvent<T>(event: string, argParser: (event: T) => any):
-        TriggerConfigurationBuilder & FieldActionConfigurationBuilder;
+    onEvent<T>(
+        event: string,
+        argParser: (event: T) => any
+    ): TriggerConfigurationBuilder & FieldActionConfigurationBuilder;
 }
 
 export interface TriggerConfigurationBuilder {

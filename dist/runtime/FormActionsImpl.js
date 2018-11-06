@@ -5,12 +5,12 @@ var FormActionsImpl = /** @class */ (function () {
         this.title = title;
         this.types = {
             FIELD_EDIT: this.makeActionType("EDIT_FIELD"),
-            FIELD_FORMAT: this.makeActionType("FORMAT_FIELD"),
-            FIELD_UNFORMAT: this.makeActionType("UNFORMAT_FIELD"),
+            FIELD_END_EDITING: this.makeActionType("EDN_FIELD_EDITING"),
+            FIELD_START_EDITING: this.makeActionType("START_FIELD_EDITING"),
             RESET: this.makeActionType("RESET"),
             SET_DATA: this.makeActionType("SET_DATA"),
             SET_ERRORS: this.makeActionType("SET_ERRORS"),
-            VALIDATE: this.makeActionType("VALIDATE"),
+            VALIDATE: this.makeActionType("VALIDATE")
         };
     }
     FormActionsImpl.prototype.fieldEdit = function (field, value, meta) {
@@ -23,10 +23,10 @@ var FormActionsImpl = /** @class */ (function () {
             form: this.title,
             meta: meta,
             type: this.types.FIELD_EDIT,
-            value: value,
+            value: value
         };
     };
-    FormActionsImpl.prototype.fieldFormat = function (field, meta) {
+    FormActionsImpl.prototype.fieldStartEditing = function (field, meta) {
         if (meta === void 0) { meta = undefined; }
         if (!field) {
             throw new Error("Field is not defined.");
@@ -35,10 +35,10 @@ var FormActionsImpl = /** @class */ (function () {
             field: field,
             form: this.title,
             meta: meta,
-            type: this.types.FIELD_FORMAT,
+            type: this.types.FIELD_START_EDITING
         };
     };
-    FormActionsImpl.prototype.fieldUnformat = function (field, meta) {
+    FormActionsImpl.prototype.fieldEndEditing = function (field, meta) {
         if (meta === void 0) { meta = undefined; }
         if (!field) {
             throw new Error("Field is not defined.");
@@ -47,7 +47,7 @@ var FormActionsImpl = /** @class */ (function () {
             field: field,
             form: this.title,
             meta: meta,
-            type: this.types.FIELD_UNFORMAT,
+            type: this.types.FIELD_END_EDITING
         };
     };
     FormActionsImpl.prototype.setData = function (data, resetState, meta) {
@@ -99,11 +99,11 @@ var FormActionsImpl = /** @class */ (function () {
     FormActionsImpl.prototype.isFieldEdit = function (action) {
         return !!action && action.type === this.types.FIELD_EDIT;
     };
-    FormActionsImpl.prototype.isFieldFormat = function (action) {
-        return !!action && action.type === this.types.FIELD_FORMAT;
+    FormActionsImpl.prototype.isFieldStartEditing = function (action) {
+        return !!action && action.type === this.types.FIELD_START_EDITING;
     };
-    FormActionsImpl.prototype.isFieldUnformat = function (action) {
-        return !!action && action.type === this.types.FIELD_UNFORMAT;
+    FormActionsImpl.prototype.isFieldEndEditing = function (action) {
+        return !!action && action.type === this.types.FIELD_END_EDITING;
     };
     FormActionsImpl.prototype.isValidate = function (action) {
         return !!action && action.type === this.types.VALIDATE;

@@ -10,13 +10,10 @@ import {
 } from "./configuration";
 import { FieldBindingConfiguration } from "./field-binding-configuration";
 
-export class FormBindingConfiguration implements
-    AnyFormBindingConfiguration,
-    TypedFormBindingTypeConfiguration<any, any>,
-    BindingFactory<any, any> {
-
+export class FormBindingConfiguration
+    implements AnyFormBindingConfiguration, TypedFormBindingTypeConfiguration<any, any>, BindingFactory<any, any> {
     private allFieldConfig: FieldBindingConfiguration;
-    private fieldsConfig: { [field: string]: FieldBindingConfiguration; } = {};
+    private fieldsConfig: { [field: string]: FieldBindingConfiguration } = {};
 
     private form: RdReduxForm<any, any> | undefined;
 
@@ -82,22 +79,24 @@ export class FormBindingConfiguration implements
             fields,
             form: this.validateFormOnSubmit
                 ? {
-                    onSubmit: (e: React.FormEvent<any>) => {
-                        e.preventDefault();
-                        dispatch(form.actions.validate(meta));
-                    }
-                }
-                : {},
+                      onSubmit: (e: React.FormEvent<any>) => {
+                          e.preventDefault();
+                          dispatch(form.actions.validate(meta));
+                      }
+                  }
+                : {}
         };
     }
 
     default(): FormBindingConfiguration {
         return this.validateOnSubmit()
             .forAllFields()
-            .edit().onChange()
-            .format().onBlur()
-            .unformat().onFocus()
+            .edit()
+            .onChange()
+            .startEditing()
+            .onFocus()
+            .endEditing()
+            .onBlur()
             .end();
     }
-
 }

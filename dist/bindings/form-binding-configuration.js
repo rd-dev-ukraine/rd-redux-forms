@@ -61,15 +61,18 @@ var FormBindingConfiguration = /** @class */ (function () {
                         dispatch(form.actions.validate(meta));
                     }
                 }
-                : {},
+                : {}
         };
     };
     FormBindingConfiguration.prototype.default = function () {
         return this.validateOnSubmit()
             .forAllFields()
-            .edit().onChange()
-            .format().onBlur()
-            .unformat().onFocus()
+            .edit()
+            .onChange()
+            .startEditing()
+            .onFocus()
+            .endEditing()
+            .onBlur()
             .end();
     };
     return FormBindingConfiguration;

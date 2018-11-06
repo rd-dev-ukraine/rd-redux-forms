@@ -46,8 +46,8 @@ export interface FieldBindingFactory {
 }
 export interface FieldActionConfigurationBuilder {
     submit(): FieldActionConfigurationBuilder & ActionTriggerConfigurationBuilder;
-    format(): FieldActionConfigurationBuilder & ActionTriggerConfigurationBuilder;
-    unformat(): FieldActionConfigurationBuilder & ActionTriggerConfigurationBuilder;
+    startEditing(): FieldActionConfigurationBuilder & ActionTriggerConfigurationBuilder;
+    endEditing(): FieldActionConfigurationBuilder & ActionTriggerConfigurationBuilder;
     edit(): FieldActionConfigurationBuilder & ActionTriggerConfigurationBuilder;
 }
 export interface ActionTriggerConfigurationBuilder {
