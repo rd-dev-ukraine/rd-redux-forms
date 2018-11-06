@@ -1,6 +1,7 @@
 import { Action } from "redux";
 import {
     FieldInfo,
+    FieldVisualState,
     FormActions,
     FormFieldsConfiguration,
     InvalidFormInfo,
@@ -49,8 +50,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         empty(): ReduxFormState<TFields> {
             return {
                 fields: {} as any,
-                formatted: new Set<string>(),
-                touched: new Set<string>(),
+                formatted: {},
+                touched: {},
                 validated: false
             };
         },
@@ -63,8 +64,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
             return {
                 errors: undefined,
                 fields: data,
-                formatted: new Set<string>(),
-                touched: new Set<string>(),
+                formatted: {},
+                touched: {},
                 validated: false
             };
         }
@@ -90,29 +91,34 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 ...(state as any),
                 errors: action.resetState ? undefined : state.errors,
                 fields: action.data,
-                formatted: action.resetState ? new Set<string>() : state.formatted,
-                touched: action.resetState ? new Set<string>() : state.touched,
+                formatted: action.resetState ? {} : state.formatted,
+                touched: action.resetState ? {} : state.touched,
                 validated: action.resetState ? false : state.validated
             };
         }
 
         if (this.actions.isFieldEdit(action)) {
-            state.formatted.delete(action.field as string);
+            const formatted = { ...(state.formatted as any) };
+            delete formatted[action.field];
+
             return {
                 ...(state as any),
                 fields: {
                     ...(state.fields as any),
                     [action.field]: action.value
                 },
-                formatted: new Set<string>(state.formatted),
-                touched: state.touched.add(action.field as string)
+                formatted,
+                touched: { ...(state.touched as any), [action.field]: true }
             };
         }
 
         if (this.actions.isFieldFormat(action)) {
             return {
                 ...(state as any),
-                formatted: state.formatted.add(action.field as string)
+                formatted: {
+                    ...(state.formatted as any),
+                    [action.field]: true
+                }
             };
         }
 
@@ -120,8 +126,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
             return {
                 ...(state as any),
                 errors: undefined,
-                formatted: new Set<string>(),
-                touched: new Set<string>(),
+                formatted: {},
+                touched: {},
                 validated: true
             };
         }
@@ -130,8 +136,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
             return {
                 ...(state as any),
                 errors: undefined,
-                formatted: new Set<string>(),
-                touched: new Set<string>(),
+                formatted: {},
+                touched: {},
                 validated: false
             };
         }
@@ -139,7 +145,10 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         if (this.actions.isSetErrors(action)) {
             return {
                 ...(state as any),
-                errors: action.errors
+                errors: action.errors,
+                formatted: {},
+                touched: {},
+                validated: true
             };
         }
 
@@ -164,32 +173,30 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     fieldConfig.formatter || ((v: any) => (v === null || v === undefined || isNaN(v) ? "" : "" + v));
 
                 const rawValue = initialValues[fieldName] as any;
+                const isFieldFormatted = !!state.formatted[fieldName];
+                const isFieldTouched = !!state.touched[fieldName];
 
-                const showErrors =
-                    state.formatted.has(fieldName as string) ||
-                    (state.validated && !state.touched.has(fieldName as string));
+                // Successfully parsed
+                const fieldCustomErrors: string[] | undefined =
+                    !!state.errors &&
+                    !!state.errors.fields &&
+                    !!state.errors.fields[fieldName] &&
+                    !!(state.errors.fields[fieldName] as any[]).length
+                        ? state.errors.fields[fieldName]
+                        : undefined;
 
                 try {
                     const parsedValue = parser(rawValue);
 
-                    // Successfully parsed
-                    const customErrors: string[] | undefined =
-                        !!state.errors &&
-                        !!state.errors.fields &&
-                        !!state.errors.fields[fieldName] &&
-                        !!(state.errors.fields[fieldName] as any[]).length
-                            ? state.errors.fields[fieldName]
-                            : undefined;
-
-                    if (customErrors) {
+                    if (fieldCustomErrors) {
                         // Parsed but has custom error set field
                         const field: ParsedFieldWithCustomErrorInfo = {
                             data: parsedValue,
-                            errors: customErrors,
-                            hasErrors: true,
+                            errors: fieldCustomErrors,
+                            hasCustomErrors: true,
                             isParsed: true,
                             value: formatter(parsedValue),
-                            visualState: showErrors ? "invalid" : "none"
+                            visualState: isFieldTouched ? (isFieldFormatted ? "valid" : "none") : "invalid"
                         };
 
                         return [fieldName, field];
@@ -197,10 +204,10 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                         // Valid field info
                         const field: ValidFieldInfo = {
                             data: parsedValue,
-                            hasErrors: false,
+                            hasCustomErrors: false,
                             isParsed: true,
                             value: formatter(parsedValue),
-                            visualState: showErrors ? "valid" : "none"
+                            visualState: isFieldFormatted ? (isFieldTouched ? "valid" : "none") : "none"
                         };
 
                         return [fieldName, field];
@@ -208,10 +215,10 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 } catch (e) {
                     const field: NonParsedFieldInfo = {
                         errors: [e.message],
-                        hasErrors: true,
+                        hasCustomErrors: !!fieldCustomErrors,
                         isParsed: false,
                         value: rawValue,
-                        visualState: showErrors ? "invalid" : "none"
+                        visualState: isFieldTouched ? (isFieldFormatted ? "invalid" : "none") : "none"
                     };
 
                     return [fieldName, field] as any;
@@ -219,37 +226,55 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
             }
         );
 
-        const isFormValid = fields.every(([_, field]) => !field.hasErrors);
+        const isFormValid = fields.every(([_, f]) => f.isParsed);
         const hasFormError = state.errors && state.errors.message && state.errors.message.length;
 
-        if (!isFormValid || hasFormError) {
+        if (!isFormValid) {
             const formInfo: InvalidFormInfo<TFields> = {
-                fields: fields.reduce<any>((result: any, [fieldName, field]) => {
-                    result[fieldName] = field;
+                customFormError: hasFormError && state.errors ? state.errors.message : undefined,
+                fields: fields.reduce<any>((result: any, [fieldName, f]) => {
+                    result[fieldName] = f;
                     return result;
                 }, {}),
-                formError: hasFormError && state.errors ? state.errors.message : undefined,
-                isParsed: fields.every(([name, field]) => field.isParsed),
+                hasCustomErrors: !!hasFormError || fields.every(([_, f]) => f.hasCustomErrors),
                 isValid: false
             };
 
             return formInfo;
         } else {
             const formInfo: ValidFormInfo<TFields> = {
-                data: fields.reduce<any>((result: any, [fieldName, field]) => {
-                    if (field.isParsed) {
-                        result[fieldName] = field.data;
+                data: fields.reduce<any>((result: any, [fieldName, f]) => {
+                    if (f.isParsed) {
+                        result[fieldName] = f.data;
                     }
                     return result;
                 }, {}),
-                fields: fields.reduce<any>((result: any, [fieldName, field]) => {
-                    result[fieldName] = field;
+                fields: fields.reduce<any>((result: any, [fieldName, f]) => {
+                    result[fieldName] = f;
                     return result;
                 }, {}),
+                hasCustomErrors: !!hasFormError || fields.every(([_, f]) => f.hasCustomErrors),
                 isValid: true
             };
 
             return formInfo;
+        }
+    }
+}
+
+function calculateFieldVisualState(
+    isParsed: boolean,
+    hasCustomError: boolean,
+    isFieldTouched: boolean,
+    isFieldEdit: boolean
+): FieldVisualState {
+    if (!isParsed) {
+        return isFieldEdit ? "none" : "invalid";
+    } else {
+        if (hasCustomError) {
+            return isFieldTouched ? "invalid" : isFieldEdit ? "none" : "valid";
+        } else {
+            return isFieldEdit ? "none" : isFieldTouched ? "valid" : "none";
         }
     }
 }

@@ -19,10 +19,10 @@ export interface ReduxFormState<T> {
     fields: { [P in keyof T]: any };
 
     /** All fields were changed since last validation or reset. */
-    touched: Set<string>;
+    touched: { [P in keyof T]?: any };
 
     /** All fields were formatted since last validation or reset. */
-    formatted: Set<string>;
+    formatted: { [P in keyof T]?: any };
 
     /**
      * True if form tried to validate.
@@ -33,11 +33,27 @@ export interface ReduxFormState<T> {
     errors?: FormErrors<T>;
 }
 
+export interface FormInfo<T> {
+    /**
+     * Indicates whether an object with data could be built from the form.
+     * It is true if all fields are correctly parsed, false otherwise.
+     * The custom errors doesn't affect this value.
+     */
+    isValid: boolean;
+
+    /**
+     * Indicates whether custom errors were set for the form.
+     */
+    hasCustomErrors: boolean;
+
+    /** Field detailed info. */
+    fields: { [P in keyof T]: FieldInfo };
+}
+
 /**
  * Detailed info about form without errors.
  */
-export interface ValidFormInfo<T> {
-    /** True if form is valid. */
+export interface ValidFormInfo<T> extends FormInfo<T> {
     isValid: true;
 
     fields: { [P in keyof T]: ValidFieldInfo };
@@ -48,16 +64,11 @@ export interface ValidFormInfo<T> {
     data: T;
 }
 
-export interface InvalidFormInfo<T> {
-    /** False for invalid form. */
+export interface InvalidFormInfo<T> extends FormInfo<T> {
     isValid: false;
 
-    /** Indicates whether all fields of the form were parsed successfully. */
-    isParsed: boolean;
-
-    fields: { [P in keyof T]: FieldInfo };
-
-    formError?: string[];
+    /** Error for the whole form set with the custom errors. */
+    customFormError?: string[];
 }
 
 export type FieldInfo = ValidFieldInfo | ParsedFieldWithCustomErrorInfo | NonParsedFieldInfo;
@@ -70,9 +81,9 @@ export interface ValidFieldInfo {
     isParsed: true;
 
     /**
-     * False if field is not valid: not parsed or has custom error set in state.
+     * Indicates whether custom errors has been set for the field.
      */
-    hasErrors: false;
+    hasCustomErrors: false;
 
     /** Field value that used as form data. Correctly parsed and validated. */
     data: any;
@@ -99,7 +110,7 @@ export interface ParsedFieldWithCustomErrorInfo {
     /**
      * False since field is valid.
      */
-    hasErrors: true;
+    hasCustomErrors: true;
 
     /** Field value that used as form data. Correctly parsed and validated. */
     data: any;
@@ -128,7 +139,7 @@ export interface NonParsedFieldInfo {
     /** False since field is not parsed. */
     isParsed: false;
 
-    hasErrors: true;
+    hasCustomErrors: boolean;
 
     /**
      * Value to display in editor.

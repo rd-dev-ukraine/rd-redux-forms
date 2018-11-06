@@ -18,22 +18,17 @@ describe("Selector", () => {
                 fields: {
                     field: "124"
                 },
-                formatted: new Set<string>(),
-                touched: new Set<string>(),
+                formatted: {},
+                touched: {},
                 validated: false
             });
 
             const expected: ValidFormInfo<OneField> = {
                 data: { field: 124 },
                 fields: {
-                    field: {
-                        data: 124,
-                        hasErrors: false,
-                        isParsed: true,
-                        value: "124",
-                        visualState: "none"
-                    }
+                    field: { data: 124, hasCustomErrors: false, isParsed: true, value: "124", visualState: "none" }
                 },
+                hasCustomErrors: false,
                 isValid: true
             };
 
