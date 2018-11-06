@@ -12,6 +12,7 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var FormActionsImpl_1 = require("./FormActionsImpl");
+var VisualStateCalc_1 = require("./VisualStateCalc");
 var RdReduxFormImpl = /** @class */ (function () {
     function RdReduxFormImpl(title, fieldConfiguration) {
         var _this = this;
@@ -96,6 +97,7 @@ var RdReduxFormImpl = /** @class */ (function () {
             }
             state = state || _this.state.empty();
             var initialValues = Object.assign.apply(Object, [{}].concat(initialData.concat([state.fields])));
+            var isFormValidated = state.validated;
             var fields = Object.keys(_this.fieldConfiguration).map(function (n) {
                 var fieldName = n;
                 var fieldConfig = _this.fieldConfiguration[fieldName];
@@ -121,7 +123,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                             hasCustomErrors: true,
                             isParsed: true,
                             value: formatter(parsedValue),
-                            visualState: calculateFieldVisualState(true, true, isFieldTouched, isFieldEditing)
+                            visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(isFormValidated, true, true, isFieldTouched, isFieldEditing)
                         };
                         return [fieldName, field];
                     }
@@ -132,7 +134,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                             hasCustomErrors: false,
                             isParsed: true,
                             value: formatter(parsedValue),
-                            visualState: calculateFieldVisualState(true, false, isFieldTouched, isFieldEditing)
+                            visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(isFormValidated, true, false, isFieldTouched, isFieldEditing)
                         };
                         return [fieldName, field];
                     }
@@ -143,7 +145,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                         hasCustomErrors: !!fieldCustomErrors,
                         isParsed: false,
                         value: rawValue,
-                        visualState: calculateFieldVisualState(false, !!fieldCustomErrors, isFieldTouched, isFieldEditing)
+                        visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(isFormValidated, false, !!fieldCustomErrors, isFieldTouched, isFieldEditing)
                     };
                     return [fieldName, field];
                 }
@@ -203,17 +205,4 @@ var RdReduxFormImpl = /** @class */ (function () {
     return RdReduxFormImpl;
 }());
 exports.RdReduxFormImpl = RdReduxFormImpl;
-function calculateFieldVisualState(isParsed, hasCustomError, isFieldTouched, isFieldEditing) {
-    if (!isParsed) {
-        return isFieldEditing ? "none" : "invalid";
-    }
-    else {
-        if (hasCustomError) {
-            return isFieldTouched ? (isFieldEditing ? "none" : "valid") : "invalid";
-        }
-        else {
-            return isFieldEditing ? "none" : isFieldTouched ? "valid" : "none";
-        }
-    }
-}
 //# sourceMappingURL=RdReduxForm.js.map

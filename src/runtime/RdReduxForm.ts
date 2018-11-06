@@ -1,7 +1,6 @@
 import { Action } from "redux";
 import {
     FieldInfo,
-    FieldVisualState,
     FormActions,
     FormFieldsConfiguration,
     InvalidFormInfo,
@@ -12,9 +11,9 @@ import {
     ValidFieldInfo,
     ValidFormInfo
 } from "../api";
-
 import { FormBindings } from "../bindings";
 import { FormActionsImpl } from "./FormActionsImpl";
+import { CalculateVisualStateStrategies } from "./VisualStateCalc";
 
 export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMeta> {
     types = {
@@ -164,6 +163,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         state = state || this.state.empty();
 
         const initialValues: Partial<TFields> = Object.assign({}, ...[...initialData, state.fields]);
+        const isFormValidated = state.validated;
 
         const fields: Array<[string, FieldInfo]> = Object.keys(this.fieldConfiguration).map<[string, FieldInfo]>(
             (n: string) => {
@@ -198,7 +198,13 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             hasCustomErrors: true,
                             isParsed: true,
                             value: formatter(parsedValue),
-                            visualState: calculateFieldVisualState(true, true, isFieldTouched, isFieldEditing)
+                            visualState: CalculateVisualStateStrategies.default(
+                                isFormValidated,
+                                true,
+                                true,
+                                isFieldTouched,
+                                isFieldEditing
+                            )
                         };
 
                         return [fieldName, field];
@@ -209,7 +215,13 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             hasCustomErrors: false,
                             isParsed: true,
                             value: formatter(parsedValue),
-                            visualState: calculateFieldVisualState(true, false, isFieldTouched, isFieldEditing)
+                            visualState: CalculateVisualStateStrategies.default(
+                                isFormValidated,
+                                true,
+                                false,
+                                isFieldTouched,
+                                isFieldEditing
+                            )
                         };
 
                         return [fieldName, field];
@@ -220,7 +232,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                         hasCustomErrors: !!fieldCustomErrors,
                         isParsed: false,
                         value: rawValue,
-                        visualState: calculateFieldVisualState(
+                        visualState: CalculateVisualStateStrategies.default(
+                            isFormValidated,
                             false,
                             !!fieldCustomErrors,
                             isFieldTouched,
@@ -265,23 +278,6 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
             };
 
             return formInfo;
-        }
-    }
-}
-
-function calculateFieldVisualState(
-    isParsed: boolean,
-    hasCustomError: boolean,
-    isFieldTouched: boolean,
-    isFieldEditing: boolean
-): FieldVisualState {
-    if (!isParsed) {
-        return isFieldEditing ? "none" : "invalid";
-    } else {
-        if (hasCustomError) {
-            return isFieldTouched ? (isFieldEditing ? "none" : "valid") : "invalid";
-        } else {
-            return isFieldEditing ? "none" : isFieldTouched ? "valid" : "none";
         }
     }
 }
