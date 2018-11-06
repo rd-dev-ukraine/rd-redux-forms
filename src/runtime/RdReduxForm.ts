@@ -128,7 +128,10 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 ...(state as any),
                 errors: undefined,
                 formatted: {},
-                touched: {},
+                touched: this.fields.reduce((result: any, field) => {
+                    result[field] = true;
+                    return result;
+                }, {}),
                 validated: true
             };
         }
@@ -163,7 +166,6 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         state = state || this.state.empty();
 
         const initialValues: Partial<TFields> = Object.assign({}, ...[...initialData, state.fields]);
-        const isFormValidated = state.validated;
 
         const fields: Array<[string, FieldInfo]> = Object.keys(this.fieldConfiguration).map<[string, FieldInfo]>(
             (n: string) => {
@@ -199,7 +201,6 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             isParsed: true,
                             value: formatter(parsedValue),
                             visualState: CalculateVisualStateStrategies.default(
-                                isFormValidated,
                                 true,
                                 true,
                                 isFieldTouched,
@@ -216,7 +217,6 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             isParsed: true,
                             value: formatter(parsedValue),
                             visualState: CalculateVisualStateStrategies.default(
-                                isFormValidated,
                                 true,
                                 false,
                                 isFieldTouched,
@@ -233,7 +233,6 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                         isParsed: false,
                         value: rawValue,
                         visualState: CalculateVisualStateStrategies.default(
-                            isFormValidated,
                             false,
                             !!fieldCustomErrors,
                             isFieldTouched,

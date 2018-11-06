@@ -80,7 +80,10 @@ var RdReduxFormImpl = /** @class */ (function () {
                 return __assign({}, state, { editing: editing });
             }
             if (_this.actions.isValidate(action)) {
-                return __assign({}, state, { errors: undefined, formatted: {}, touched: {}, validated: true });
+                return __assign({}, state, { errors: undefined, formatted: {}, touched: _this.fields.reduce(function (result, field) {
+                        result[field] = true;
+                        return result;
+                    }, {}), validated: true });
             }
             if (_this.actions.isReset(action)) {
                 return __assign({}, state, { errors: undefined, formatted: {}, touched: {}, validated: false });
@@ -97,7 +100,6 @@ var RdReduxFormImpl = /** @class */ (function () {
             }
             state = state || _this.state.empty();
             var initialValues = Object.assign.apply(Object, [{}].concat(initialData.concat([state.fields])));
-            var isFormValidated = state.validated;
             var fields = Object.keys(_this.fieldConfiguration).map(function (n) {
                 var fieldName = n;
                 var fieldConfig = _this.fieldConfiguration[fieldName];
@@ -123,7 +125,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                             hasCustomErrors: true,
                             isParsed: true,
                             value: formatter(parsedValue),
-                            visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(isFormValidated, true, true, isFieldTouched, isFieldEditing)
+                            visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(true, true, isFieldTouched, isFieldEditing)
                         };
                         return [fieldName, field];
                     }
@@ -134,7 +136,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                             hasCustomErrors: false,
                             isParsed: true,
                             value: formatter(parsedValue),
-                            visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(isFormValidated, true, false, isFieldTouched, isFieldEditing)
+                            visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(true, false, isFieldTouched, isFieldEditing)
                         };
                         return [fieldName, field];
                     }
@@ -145,7 +147,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                         hasCustomErrors: !!fieldCustomErrors,
                         isParsed: false,
                         value: rawValue,
-                        visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(isFormValidated, false, !!fieldCustomErrors, isFieldTouched, isFieldEditing)
+                        visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(false, !!fieldCustomErrors, isFieldTouched, isFieldEditing)
                     };
                     return [fieldName, field];
                 }

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CalculateVisualStateStrategies = {
-    default: function (isFormSubmitted, isParsed, hasCustomError, isFieldTouched, isFieldEditing) {
+    default: function (isParsed, hasCustomError, isFieldTouched, isFieldEditing) {
         if (!isParsed) {
             return isFieldEditing ? "none" : "invalid";
         }

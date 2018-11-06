@@ -10,7 +10,6 @@ export type CalculateVisualStateFn = (
 
 export const CalculateVisualStateStrategies = {
     default(
-        isFormSubmitted: boolean,
         isParsed: boolean,
         hasCustomError: boolean,
         isFieldTouched: boolean,

@@ -44,127 +44,116 @@ describe("Reducer test:", () => {
                 hasCustomErrors: false,
                 isParsed: true,
                 value: "4321",
-                visualState: "none"
+                visualState: "valid"
             } as FieldInfo);
         });
     });
 
-    //     describe("should be invalid", () => {
-    //         it("but not visually marked if form is not validated", () => {
-    //             const data = applyActions([form.actions.fieldEdit("field", "cant", undefined)]);
-    //             data.isValid.should.be.false();
+    describe("should be invalid", () => {
+        it("but not visually marked if form is not validated", () => {
+            const data = applyActions([form.actions.fieldEdit("field", "cant", undefined)]);
+            data.isValid.should.be.false();
+            data.fields.field.should.be.eql({
+                errors: ["Value is not a valid number"],
+                hasCustomErrors: false,
+                isParsed: false,
+                value: "cant",
+                visualState: "invalid"
+            } as FieldInfo);
+        });
+        it("and visually marked as invalid if form validated", () => {
+            const data = applyActions([form.actions.fieldEdit("field", "cant", undefined), form.actions.validate()]);
+            data.isValid.should.be.false();
+            data.fields.field.should.be.eql({
+                errors: ["Value is not a valid number"],
+                hasCustomErrors: false,
+                isParsed: false,
+                value: "cant",
+                visualState: "invalid"
+            } as FieldInfo);
+        });
+        it("and visually marked as invalid if field is formatted", () => {
+            const data = applyActions([form.actions.fieldEdit("field", "cant", undefined)]);
+            data.isValid.should.be.false();
+            data.fields.field.should.be.eql({
+                errors: ["Value is not a valid number"],
+                hasCustomErrors: false,
+                isParsed: false,
+                value: "cant",
+                visualState: "invalid"
+            } as FieldInfo);
+        });
+    });
 
-    //             data.fields.field.should.be.eql({
-    //                 errors: ["Value is not a valid number"],
-    //                 hasCustomErrors: true,
-    //                 isParsed: false,
-    //                 value: "cant",
-    //                 visualState: "none"
-    //             } as FieldInfo);
-    //         });
+    describe("form with external errors", () => {
+        it("should have errors in fields if errors are set event if form is not validated", () => {
+            const data = applyActions(
+                [
+                    form.actions.setErrors({
+                        fields: {
+                            field: ["Value too large"]
+                        }
+                    })
+                ],
+                form.state.withData({ field: 1234 })
+            );
+            data.isValid.should.be.true();
+            data.fields.field.should.be.eql({
+                data: 1234,
+                errors: ["Value too large"],
+                hasCustomErrors: true,
+                isParsed: true,
+                value: "1234",
+                visualState: "invalid"
+            } as FieldInfo);
+        });
 
-    //         it("and visually marked as invalid if form validated", () => {
-    //             const data = applyActions([
-    //                 form.actions.fieldEdit("field", "cant", undefined),
-    //                 form.actions.validate()
-    //             ]);
-    //             data.isValid.should.be.false();
-    //             data.fields.field.should.be.eql({
-    //                 errors: ["Value is not a valid number"],
-    //                 hasCustomErrors: true,
-    //                 isParsed: false,
-    //                 value: "cant",
-    //                 visualState: "invalid"
-    //             } as FieldInfo);
-    //         });
+        it("should not display error if field is edited", () => {
+            const data = applyActions(
+                [
+                    form.actions.setErrors({
+                        fields: {
+                            field: ["Value too large"]
+                        }
+                    }),
+                    form.actions.fieldEdit("field", 111, undefined)
+                ],
+                form.state.withData({ field: 1234 })
+            );
+            data.isValid.should.be.true();
+            data.fields.field.should.be.eql({
+                data: 111,
+                errors: ["Value too large"],
+                hasCustomErrors: true,
+                isParsed: true,
+                value: "111",
+                visualState: "valid"
+            } as FieldInfo);
+        });
 
-    //         it("and visually marked as invalid if field is formatted", () => {
-    //             const data = applyActions([
-    //                 form.actions.fieldEdit("field", "cant", undefined),
-    //                 form.actions.fieldFormat("field", undefined)
-    //             ]);
-    //             data.isValid.should.be.false();
-    //             data.fields.field.should.be.eql({
-    //                 errors: ["Value is not a valid number"],
-    //                 hasCustomErrors: true,
-    //                 isParsed: false,
-    //                 value: "cant",
-    //                 visualState: "invalid"
-    //             } as FieldInfo);
-    //         });
-    //     });
-    // });
-
-    // describe("form with external errors", () => {
-    //     it("should have errors in fields if errors are set event if form is not validated", () => {
-    //         const data = applyActions(
-    //             [
-    //                 form.actions.setErrors({
-    //                     fields: {
-    //                         field: ["Value too large"]
-    //                     }
-    //                 })
-    //             ],
-    //             form.state.withData({ field: 1234 })
-    //         );
-    //         data.isValid.should.be.false();
-    //         data.fields.field.should.be.eql({
-    //             data: 1234,
-    //             errors: ["Value too large"],
-    //             hasCustomErrors: true,
-    //             isParsed: true,
-    //             value: "1234",
-    //             visualState: "invalid"
-    //         } as FieldInfo);
-    //     });
-
-    //     it("should not display error if field is edited", () => {
-    //         const data = applyActions(
-    //             [
-    //                 form.actions.setErrors({
-    //                     fields: {
-    //                         field: ["Value too large"]
-    //                     }
-    //                 }),
-    //                 form.actions.fieldEdit("field", 111, undefined)
-    //             ],
-    //             form.state.withData({ field: 1234 })
-    //         );
-    //         data.isValid.should.be.false();
-    //         data.fields.field.should.be.eql({
-    //             data: 111,
-    //             errors: ["Value too large"],
-    //             hasCustomErrors: true,
-    //             isParsed: true,
-    //             value: "111",
-    //             visualState: "none"
-    //         } as FieldInfo);
-    //     });
-
-    //     it("should display valid field if value is parsed and formatted", () => {
-    //         const data = applyActions(
-    //             [
-    //                 form.actions.setErrors({
-    //                     fields: {
-    //                         field: ["Value too large"]
-    //                     }
-    //                 }),
-    //                 form.actions.fieldEdit("field", 111, undefined),
-    //                 form.actions.fieldFormat("field", undefined)
-    //             ],
-    //             form.state.withData({ field: 1234 })
-    //         );
-    //         data.isValid.should.be.false();
-    //         data.fields.field.should.be.eql({
-    //             data: 111,
-    //             errors: ["Value too large"],
-    //             hasCustomErrors: true,
-    //             isParsed: true,
-    //             value: "111",
-    //             visualState: "valid"
-    //         } as FieldInfo);
-    //     });
-    // });
+        it("should display valid field if value is parsed and formatted", () => {
+            const data = applyActions(
+                [
+                    form.actions.setErrors({
+                        fields: {
+                            field: ["Value too large"]
+                        }
+                    }),
+                    form.actions.fieldEdit("field", 111, undefined)
+                ],
+                form.state.withData({ field: 1234 })
+            );
+            data.isValid.should.be.true();
+            data.fields.field.should.be.eql({
+                data: 111,
+                errors: ["Value too large"],
+                hasCustomErrors: true,
+                isParsed: true,
+                value: "111",
+                visualState: "valid"
+            } as FieldInfo);
+        });
+    });
 
     describe("typical flow: no custom errors", () => {
         it("initial form with data", () => {
