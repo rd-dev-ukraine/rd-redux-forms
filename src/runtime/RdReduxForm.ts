@@ -184,8 +184,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     if (customErrors) {
                         // Parsed but has custom error set field
                         const field: ParsedFieldWithCustomErrorInfo = {
-                            errors: customErrors,
                             data: parsedValue,
+                            errors: customErrors,
                             hasErrors: true,
                             isParsed: true,
                             value: formatter(parsedValue),
@@ -196,10 +196,10 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     } else {
                         // Valid field info
                         const field: ValidFieldInfo = {
-                            value: formatter(parsedValue),
+                            data: parsedValue,
                             hasErrors: false,
                             isParsed: true,
-                            data: parsedValue,
+                            value: formatter(parsedValue),
                             visualState: showErrors ? "valid" : "none"
                         };
 
