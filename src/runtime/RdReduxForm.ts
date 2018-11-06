@@ -126,12 +126,9 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         if (this.actions.isValidate(action)) {
             return {
                 ...(state as any),
-                errors: undefined,
+                errors: state.errors,
                 formatted: {},
-                touched: this.fields.reduce((result: any, field) => {
-                    result[field] = true;
-                    return result;
-                }, {}),
+                touched: {},
                 validated: true
             };
         }
@@ -201,6 +198,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             isParsed: true,
                             value: formatter(parsedValue),
                             visualState: CalculateVisualStateStrategies.default(
+                                state.validated,
                                 true,
                                 true,
                                 isFieldTouched,
@@ -217,6 +215,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             isParsed: true,
                             value: formatter(parsedValue),
                             visualState: CalculateVisualStateStrategies.default(
+                                state.validated,
                                 true,
                                 false,
                                 isFieldTouched,
@@ -233,6 +232,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                         isParsed: false,
                         value: rawValue,
                         visualState: CalculateVisualStateStrategies.default(
+                            state.validated,
                             false,
                             !!fieldCustomErrors,
                             isFieldTouched,
@@ -255,7 +255,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     result[fieldName] = f;
                     return result;
                 }, {}),
-                hasCustomErrors: !!hasFormError || fields.every(([_, f]) => f.hasCustomErrors),
+                hasCustomErrors: !!hasFormError || fields.some(([_, f]) => f.hasCustomErrors),
                 isValid: false
             };
 
@@ -272,7 +272,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     result[fieldName] = f;
                     return result;
                 }, {}),
-                hasCustomErrors: !!hasFormError || fields.every(([_, f]) => f.hasCustomErrors),
+                hasCustomErrors: !!hasFormError || fields.some(([_, f]) => f.hasCustomErrors),
                 isValid: true
             };
 
