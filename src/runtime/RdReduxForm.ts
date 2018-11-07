@@ -15,7 +15,11 @@ import { FormBindings } from "../bindings";
 import { FormActionsImpl } from "./FormActionsImpl";
 import { CalculateVisualStateStrategies } from "./VisualStateCalc";
 
+let formCounter = 0;
+
 export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMeta> {
+    id: string = `${++formCounter}`;
+
     types = {
         get fields(): TFields {
             throw new Error("Use with Typescript typeof expression only.");
@@ -69,7 +73,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         }
     };
 
-    constructor(private title: string, private fieldConfiguration: FormFieldsConfiguration<TFields>) {
+    constructor(public title: string, private fieldConfiguration: FormFieldsConfiguration<TFields>) {
         if (!title) {
             throw new Error("Form title is not defined.");
         }

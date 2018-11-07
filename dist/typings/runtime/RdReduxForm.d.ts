@@ -2,8 +2,9 @@ import { Action } from "redux";
 import { FormActions, FormFieldsConfiguration, InvalidFormInfo, RdReduxForm, ReduxFormState, ValidFormInfo } from "../api";
 import { FormBindings } from "../bindings";
 export declare class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMeta> {
-    private title;
+    title: string;
     private fieldConfiguration;
+    id: string;
     types: {
         readonly fields: TFields;
         readonly meta: TMeta;

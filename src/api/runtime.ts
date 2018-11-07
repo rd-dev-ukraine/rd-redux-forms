@@ -8,6 +8,12 @@ import { InvalidFormInfo, ReduxFormState, ValidFormInfo } from "./common";
  * rd-redux-forms object describes a form.
  */
 export interface RdReduxForm<TFields, TMeta> {
+    /** Form title specified on creation. */
+    readonly title: string;
+
+    /** Unique form instance id. */
+    readonly id: string;
+
     /**
      * Method for creating form actions and checking action type.
      */
@@ -28,8 +34,10 @@ export interface RdReduxForm<TFields, TMeta> {
      * @param initialData Values of fields for which there were no user input.
      * @returns An object contains all information about form input.
      */
-    selector: (state: ReduxFormState<TFields>, ...initialData: Array<Partial<TFields>>) =>
-        ValidFormInfo<TFields> | InvalidFormInfo<TFields>;
+    selector: (
+        state: ReduxFormState<TFields>,
+        ...initialData: Array<Partial<TFields>>
+    ) => ValidFormInfo<TFields> | InvalidFormInfo<TFields>;
 
     /** Creates different form state. */
     state: {

@@ -13,11 +13,13 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var FormActionsImpl_1 = require("./FormActionsImpl");
 var VisualStateCalc_1 = require("./VisualStateCalc");
+var formCounter = 0;
 var RdReduxFormImpl = /** @class */ (function () {
     function RdReduxFormImpl(title, fieldConfiguration) {
         var _this = this;
         this.title = title;
         this.fieldConfiguration = fieldConfiguration;
+        this.id = "" + ++formCounter;
         this.types = {
             get fields() {
                 throw new Error("Use with Typescript typeof expression only.");

@@ -6,6 +6,10 @@ import { InvalidFormInfo, ReduxFormState, ValidFormInfo } from "./common";
  * rd-redux-forms object describes a form.
  */
 export interface RdReduxForm<TFields, TMeta> {
+    /** Form title specified on creation. */
+    readonly title: string;
+    /** Unique form instance id. */
+    readonly id: string;
     /**
      * Method for creating form actions and checking action type.
      */
