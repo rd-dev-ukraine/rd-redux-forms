@@ -1,6 +1,6 @@
 {
   "name": "rd-redux-forms",
-  "version": "3.0.0",
+  "version": "3.3.0",
   "private": false,
   "description": "HTML forms for react and redux",
   "keywords": [
@@ -13,7 +13,8 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "test": "mocha --opts tests/mocha.opts",
-    "test:watch": "mocha --watch --opts tests/mocha.opts"
+    "test:watch": "mocha --watch --opts tests/mocha.opts",
+    "golive": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
