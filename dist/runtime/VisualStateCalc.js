@@ -8,7 +8,7 @@ exports.CalculateVisualStateStrategies = {
         }
         // If field is not parsed immediately mark field as invalid
         if (!isParsed) {
-            return "invalid";
+            return isFormValidated || isFieldTouched ? "invalid" : "none";
         }
         // If field has custom error,
         // mark field as invalid if field is not touched yet.

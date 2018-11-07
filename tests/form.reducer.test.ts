@@ -199,7 +199,7 @@ describe("Reducer test:", () => {
                 hasCustomErrors: false,
                 isParsed: false,
                 value: undefined,
-                visualState: "invalid"
+                visualState: "none"
             } as FieldInfo);
         });
 
