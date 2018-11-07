@@ -141,11 +141,11 @@ export class FieldBindingConfiguration
                     } else {
                         run(value).then((val: any) => {
                             switch (action) {
-                                case "begin_edit": {
+                                case "startEditing": {
                                     dispatch(form.actions.fieldStartEditing(field, meta));
                                     break;
                                 }
-                                case "unformat": {
+                                case "endEditing": {
                                     dispatch(form.actions.fieldEndEditing(field, meta));
                                     break;
                                 }

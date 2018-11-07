@@ -15,7 +15,7 @@ import {
 export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<TFields, TMeta> {
     types = {
         FIELD_EDIT: this.makeActionType("EDIT_FIELD"),
-        FIELD_END_EDITING: this.makeActionType("EDN_FIELD_EDITING"),
+        FIELD_END_EDITING: this.makeActionType("END_FIELD_EDITING"),
         FIELD_START_EDITING: this.makeActionType("START_FIELD_EDITING"),
         RESET: this.makeActionType("RESET"),
         SET_DATA: this.makeActionType("SET_DATA"),

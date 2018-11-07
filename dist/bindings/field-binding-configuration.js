@@ -93,11 +93,11 @@ var FieldBindingConfiguration = /** @class */ (function () {
                     else {
                         run(value).then(function (val) {
                             switch (action) {
-                                case "begin_edit": {
+                                case "startEditing": {
                                     dispatch(form.actions.fieldStartEditing(field, meta));
                                     break;
                                 }
-                                case "unformat": {
+                                case "endEditing": {
                                     dispatch(form.actions.fieldEndEditing(field, meta));
                                     break;
                                 }
