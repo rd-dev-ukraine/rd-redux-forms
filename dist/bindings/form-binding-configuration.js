@@ -1,4 +1,24 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) if (e.indexOf(p[i]) < 0)
+            t[p[i]] = s[p[i]];
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var field_binding_configuration_1 = require("./field-binding-configuration");
 var FormBindingConfiguration = /** @class */ (function () {
@@ -47,21 +67,54 @@ var FormBindingConfiguration = /** @class */ (function () {
             throw new Error("Form is not attached to the binding config.");
         }
         var form = this.form;
-        var fields = this.form.fields.reduce(function (result, field) {
+        var fieldEvents = this.form.fields.reduce(function (result, field) {
             var bindingFactory = (_this.fieldsConfig || {})[field] || _this.allFieldConfig;
             result[field] = bindingFactory.build(form, field, dispatch, meta);
             return result;
         }, {});
-        return {
-            fields: fields,
-            form: this.validateFormOnSubmit
-                ? {
-                    onSubmit: function (e) {
-                        e.preventDefault();
-                        dispatch(form.actions.validate(meta));
-                    }
+        var formEvents = this.validateFormOnSubmit
+            ? {
+                onSubmit: function (e) {
+                    e.preventDefault();
+                    dispatch(form.actions.validate(meta));
                 }
-                : {}
+            }
+            : {};
+        return {
+            connect: function (formSelectionResult) { return ({
+                fields: Object.keys(formSelectionResult.fields).reduce(function (result, fieldName) {
+                    var fieldInfo = formSelectionResult.fields[fieldName];
+                    var events = fieldEvents[fieldName];
+                    result[fieldName] = __assign({}, fieldInfo, { checkbox: function (checkedValue, uncheckedValue) {
+                            if (checkedValue === void 0) { checkedValue = true; }
+                            if (uncheckedValue === void 0) { uncheckedValue = false; }
+                            var onChange = events.onChange, rest = __rest(events, ["onChange"]);
+                            return __assign({}, rest, { checked: fieldInfo.value === checkedValue ? true : false, onChange: function (e) {
+                                    if (e.currentTarget.type === "radio") {
+                                        if (e.currentTarget.checked) {
+                                            onChange(checkedValue);
+                                        }
+                                    }
+                                    else {
+                                        onChange(e.currentTarget.checked ? checkedValue : uncheckedValue);
+                                    }
+                                } });
+                        }, events: events, input: function (replaceUndefinedValue, replaceWith) {
+                            if (replaceWith === void 0) { replaceWith = ""; }
+                            return (__assign({}, events, { value: fieldInfo.value === undefined && replaceUndefinedValue ? replaceWith : fieldInfo.value }));
+                        }, multiCheckbox: function (value) {
+                            var onChange = events.onChange, rest = __rest(events, ["onChange"]);
+                            return __assign({}, rest, { onChange: function (e) {
+                                    fieldEvents.onChange(e.currentTarget.checked
+                                        ? (fieldInfo.value || []).concat([value]) : (fieldInfo.value || []).filter(function (el) { return el !== value; }));
+                                } });
+                        } });
+                    return result;
+                }, {}),
+                formProps: formEvents
+            }); },
+            fields: fieldEvents,
+            form: formEvents
         };
     };
     FormBindingConfiguration.prototype.default = function () {
