@@ -231,7 +231,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     }
                 } catch (e) {
                     const field: NonParsedFieldInfo = {
-                        errors: [e.message],
+                        errors: [e.message, ...(fieldCustomErrors || [])],
                         hasCustomErrors: !!fieldCustomErrors,
                         isParsed: false,
                         value: rawValue,

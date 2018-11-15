@@ -169,6 +169,30 @@ describe("Reducer test:", () => {
                 visualState: "none"
             } as FieldInfo);
         });
+
+        it("should add custom errors to errors for non-parsed field", () => {
+            const data = applyActions(
+                [
+                    form.actions.setErrors({
+                        fields: {
+                            field: ["Value too large"]
+                        }
+                    }),
+                    form.actions.fieldEdit("field", "abc", undefined)
+                ],
+                form.state.withData({
+                    field: 1234
+                })
+            );
+            data.isValid.should.be.false();
+            data.fields.field.should.be.eql({
+                errors: ["Value is not a valid number", "Value too large"],
+                hasCustomErrors: true,
+                isParsed: false,
+                value: "abc",
+                visualState: "invalid"
+            } as FieldInfo);
+        });
     });
 
     describe("typical flow: no custom errors", () => {

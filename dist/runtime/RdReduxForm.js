@@ -142,7 +142,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                 }
                 catch (e) {
                     var field = {
-                        errors: [e.message],
+                        errors: [e.message].concat((fieldCustomErrors || [])),
                         hasCustomErrors: !!fieldCustomErrors,
                         isParsed: false,
                         value: rawValue,
