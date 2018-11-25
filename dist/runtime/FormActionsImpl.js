@@ -2,7 +2,90 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var FormActionsImpl = /** @class */ (function () {
     function FormActionsImpl(title) {
+        var _this = this;
         this.title = title;
+        this.fieldEdit = function (field, value, meta) {
+            if (meta === void 0) { meta = undefined; }
+            if (!field) {
+                throw new Error("Field is not defined.");
+            }
+            return { field: field, form: _this.title, meta: meta, type: _this.types.FIELD_EDIT, value: value };
+        };
+        this.fieldStartEditing = function (field, meta) {
+            if (meta === void 0) { meta = undefined; }
+            if (!field) {
+                throw new Error("Field is not defined.");
+            }
+            return { field: field, form: _this.title, meta: meta, type: _this.types.FIELD_START_EDITING };
+        };
+        this.fieldEndEditing = function (field, meta) {
+            if (meta === void 0) { meta = undefined; }
+            if (!field) {
+                throw new Error("Field is not defined.");
+            }
+            return { field: field, form: _this.title, meta: meta, type: _this.types.FIELD_END_EDITING };
+        };
+        this.setData = function (data, resetState, meta) {
+            if (resetState === void 0) { resetState = false; }
+            if (meta === void 0) { meta = undefined; }
+            if (!data) {
+                throw new Error("Data is not defined.");
+            }
+            return { data: data, form: _this.title, meta: meta, resetState: resetState, type: _this.types.SET_DATA };
+        };
+        this.validate = function (meta) {
+            if (meta === void 0) { meta = undefined; }
+            return { form: _this.title, meta: meta, type: _this.types.VALIDATE };
+        };
+        this.setErrors = function (errors, meta) {
+            if (meta === void 0) { meta = undefined; }
+            return { errors: errors, form: _this.title, meta: meta, type: _this.types.SET_ERRORS };
+        };
+        this.resetErrors = function (meta) {
+            if (meta === void 0) { meta = undefined; }
+            return _this.setErrors(undefined, meta);
+        };
+        this.reset = function (meta) {
+            if (meta === void 0) { meta = undefined; }
+            return { form: _this.title, meta: meta, type: _this.types.RESET };
+        };
+        this.isSetData = function (action) {
+            return !!action && action.type === _this.types.SET_DATA;
+        };
+        this.isFieldEdit = function (action) {
+            return !!action && action.type === _this.types.FIELD_EDIT;
+        };
+        this.isFieldStartEditing = function (action) {
+            return !!action && action.type === _this.types.FIELD_START_EDITING;
+        };
+        this.isFieldEndEditing = function (action) {
+            return !!action && action.type === _this.types.FIELD_END_EDITING;
+        };
+        this.isValidate = function (action) {
+            return !!action && action.type === _this.types.VALIDATE;
+        };
+        this.isReset = function (action) {
+            return !!action && action.type === _this.types.RESET;
+        };
+        this.isSetErrors = function (action) {
+            return !!action && action.type === _this.types.SET_ERRORS;
+        };
+        this.isMyAction = function (action) {
+            if (action && ("" + action.type).indexOf(_this.actionPrefix()) === 0) {
+                return action.form === _this.title;
+            }
+            return false;
+        };
+        this.makeActionType = function (action) {
+            if (!action) {
+                throw new Error("Action is not defined.");
+            }
+            return _this.actionPrefix() + " " + action.toLowerCase();
+        };
+        this.actionPrefix = function () {
+            return "RD-FORM :: " + _this.title + " ::";
+        };
+        // tslint:disable-next-line:member-ordering
         this.types = {
             FIELD_EDIT: this.makeActionType("EDIT_FIELD"),
             FIELD_END_EDITING: this.makeActionType("END_FIELD_EDITING"),
@@ -13,122 +96,6 @@ var FormActionsImpl = /** @class */ (function () {
             VALIDATE: this.makeActionType("VALIDATE")
         };
     }
-    FormActionsImpl.prototype.fieldEdit = function (field, value, meta) {
-        if (meta === void 0) { meta = undefined; }
-        if (!field) {
-            throw new Error("Field is not defined.");
-        }
-        return {
-            field: field,
-            form: this.title,
-            meta: meta,
-            type: this.types.FIELD_EDIT,
-            value: value
-        };
-    };
-    FormActionsImpl.prototype.fieldStartEditing = function (field, meta) {
-        if (meta === void 0) { meta = undefined; }
-        if (!field) {
-            throw new Error("Field is not defined.");
-        }
-        return {
-            field: field,
-            form: this.title,
-            meta: meta,
-            type: this.types.FIELD_START_EDITING
-        };
-    };
-    FormActionsImpl.prototype.fieldEndEditing = function (field, meta) {
-        if (meta === void 0) { meta = undefined; }
-        if (!field) {
-            throw new Error("Field is not defined.");
-        }
-        return {
-            field: field,
-            form: this.title,
-            meta: meta,
-            type: this.types.FIELD_END_EDITING
-        };
-    };
-    FormActionsImpl.prototype.setData = function (data, resetState, meta) {
-        if (resetState === void 0) { resetState = false; }
-        if (meta === void 0) { meta = undefined; }
-        if (!data) {
-            throw new Error("Data is not defined.");
-        }
-        return {
-            data: data,
-            form: this.title,
-            meta: meta,
-            resetState: resetState,
-            type: this.types.SET_DATA
-        };
-    };
-    FormActionsImpl.prototype.validate = function (meta) {
-        if (meta === void 0) { meta = undefined; }
-        return {
-            form: this.title,
-            meta: meta,
-            type: this.types.VALIDATE
-        };
-    };
-    FormActionsImpl.prototype.setErrors = function (errors, meta) {
-        if (meta === void 0) { meta = undefined; }
-        return {
-            errors: errors,
-            form: this.title,
-            meta: meta,
-            type: this.types.SET_ERRORS
-        };
-    };
-    FormActionsImpl.prototype.resetErrors = function (meta) {
-        if (meta === void 0) { meta = undefined; }
-        return this.setErrors(undefined, meta);
-    };
-    FormActionsImpl.prototype.reset = function (meta) {
-        if (meta === void 0) { meta = undefined; }
-        return {
-            form: this.title,
-            meta: meta,
-            type: this.types.RESET
-        };
-    };
-    FormActionsImpl.prototype.isSetData = function (action) {
-        return !!action && action.type === this.types.SET_DATA;
-    };
-    FormActionsImpl.prototype.isFieldEdit = function (action) {
-        return !!action && action.type === this.types.FIELD_EDIT;
-    };
-    FormActionsImpl.prototype.isFieldStartEditing = function (action) {
-        return !!action && action.type === this.types.FIELD_START_EDITING;
-    };
-    FormActionsImpl.prototype.isFieldEndEditing = function (action) {
-        return !!action && action.type === this.types.FIELD_END_EDITING;
-    };
-    FormActionsImpl.prototype.isValidate = function (action) {
-        return !!action && action.type === this.types.VALIDATE;
-    };
-    FormActionsImpl.prototype.isReset = function (action) {
-        return !!action && action.type === this.types.RESET;
-    };
-    FormActionsImpl.prototype.isSetErrors = function (action) {
-        return !!action && action.type === this.types.SET_ERRORS;
-    };
-    FormActionsImpl.prototype.isMyAction = function (action) {
-        if (action && ("" + action.type).indexOf(this.actionPrefix()) === 0) {
-            return action.form === this.title;
-        }
-        return false;
-    };
-    FormActionsImpl.prototype.makeActionType = function (action) {
-        if (!action) {
-            throw new Error("Action is not defined.");
-        }
-        return this.actionPrefix() + " " + action.toLowerCase();
-    };
-    FormActionsImpl.prototype.actionPrefix = function () {
-        return "RD-FORM :: " + this.title + " ::";
-    };
     return FormActionsImpl;
 }());
 exports.FormActionsImpl = FormActionsImpl;
