@@ -112,10 +112,13 @@ export class FormBindingConfiguration
                             };
                         },
                         events,
-                        input: (replaceUndefinedValue: boolean, replaceWith: any = "") => ({
+                        input: (replaceUndefinedOrNullValue: boolean, replaceWith: any = "") => ({
                             ...events,
                             value:
-                                fieldInfo.value === undefined && replaceUndefinedValue ? replaceWith : fieldInfo.value
+                                (fieldInfo.value === undefined || fieldInfo.value === null) &&
+                                replaceUndefinedOrNullValue
+                                    ? replaceWith
+                                    : fieldInfo.value
                         }),
                         multiCheckbox: (value: any) => {
                             const { onChange, ...rest } = events;

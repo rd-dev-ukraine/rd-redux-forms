@@ -99,9 +99,12 @@ var FormBindingConfiguration = /** @class */ (function () {
                                         onChange(e.currentTarget.checked ? checkedValue : uncheckedValue);
                                     }
                                 } });
-                        }, events: events, input: function (replaceUndefinedValue, replaceWith) {
+                        }, events: events, input: function (replaceUndefinedOrNullValue, replaceWith) {
                             if (replaceWith === void 0) { replaceWith = ""; }
-                            return (__assign({}, events, { value: fieldInfo.value === undefined && replaceUndefinedValue ? replaceWith : fieldInfo.value }));
+                            return (__assign({}, events, { value: (fieldInfo.value === undefined || fieldInfo.value === null) &&
+                                    replaceUndefinedOrNullValue
+                                    ? replaceWith
+                                    : fieldInfo.value }));
                         }, multiCheckbox: function (value) {
                             var onChange = events.onChange, rest = __rest(events, ["onChange"]);
                             return __assign({}, rest, { onChange: function (e) {

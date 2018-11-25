@@ -166,7 +166,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
     ): ValidFormInfo<TFields> | InvalidFormInfo<TFields> => {
         state = state || this.state.empty();
 
-        const initialValues: Partial<TFields> = Object.assign({}, ...[...initialData, state.fields]);
+        const formValues: Partial<TFields> = Object.assign({}, ...[...initialData, state.fields]);
 
         const fields: Array<[string, FieldInfo]> = Object.keys(this.fieldConfiguration).map<[string, FieldInfo]>(
             (n: string) => {
@@ -177,7 +177,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 const formatter =
                     fieldConfig.formatter || ((v: any) => (v === null || v === undefined || isNaN(v) ? "" : "" + v));
 
-                const rawValue = initialValues[fieldName] as any;
+                const rawValue = formValues[fieldName] as any;
                 const isFieldEditing = !!state.editing[fieldName];
                 const isFieldTouched = !!state.touched[fieldName];
 
@@ -200,7 +200,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             errors: fieldCustomErrors,
                             hasCustomErrors: true,
                             isParsed: true,
-                            value: formatter(parsedValue),
+                            value: isFieldEditing ? rawValue : formatter(parsedValue),
                             visualState: CalculateVisualStateStrategies.default(
                                 state.validated,
                                 true,
@@ -217,7 +217,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             data: parsedValue,
                             hasCustomErrors: false,
                             isParsed: true,
-                            value: formatter(parsedValue),
+                            value: isFieldEditing ? rawValue : formatter(parsedValue),
                             visualState: CalculateVisualStateStrategies.default(
                                 state.validated,
                                 true,

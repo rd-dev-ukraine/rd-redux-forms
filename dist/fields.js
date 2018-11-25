@@ -13,7 +13,21 @@ exports.fields = {
         if (digits === void 0) { digits = 2; }
         if (required === void 0) { required = true; }
         return ({
-            parser: exports.fields.int(required, errorMessage).parser,
+            parser: function (input) {
+                if (input === void 0) { input = ""; }
+                input = ("" + (input || "")).trim();
+                if (!input) {
+                    if (required) {
+                        throw new Error(errorMessage || "Value is required.");
+                    }
+                    return null;
+                }
+                var parsed = parseFloat(input);
+                if (isNaN(parsed)) {
+                    throw new Error(errorMessage || "Value is not a valid number");
+                }
+                return parsed;
+            },
             formatter: function (input) {
                 if (input === null || input === undefined) {
                     return "";

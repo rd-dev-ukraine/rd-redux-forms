@@ -15,7 +15,24 @@ export const fields = {
         required: boolean = true,
         errorMessage?: string
     ): FieldConfiguration<number | null> => ({
-        parser: fields.int(required, errorMessage).parser,
+        parser(input: string = ""): number | null {
+            input = `${input || ""}`.trim();
+
+            if (!input) {
+                if (required) {
+                    throw new Error(errorMessage || "Value is required.");
+                }
+
+                return null;
+            }
+
+            const parsed = parseFloat(input);
+            if (isNaN(parsed)) {
+                throw new Error(errorMessage || "Value is not a valid number");
+            }
+
+            return parsed;
+        },
         formatter(input: number | null | undefined): string {
             if (input === null || input === undefined) {
                 return "";
