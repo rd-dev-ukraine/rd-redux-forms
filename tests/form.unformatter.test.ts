@@ -11,19 +11,18 @@ describe("Form unformatter test", () => {
     const form = createForm<OneField>("One field form", {
         field: {
             parse: fields.float(2, true).parse,
-            toDisplay: (info) => {
-                if (info.isParsed) {
-                    if (info.isEditing) {
-                        return info.parsedValue === 0 ? "" : (info.parsedValue || 0).toString();
-                    } else {
-                        return (info.parsedValue || 0).toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            useGrouping: true
-                        });
-                    }
-                } else {
-                    return info.input;
+            formatForDisplay(value) {
+                return (value || 0).toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    useGrouping: true
+                });
+            },
+            formatForEditing(value: string) {
+                if (value === "0") {
+                    return "";
                 }
+
+                return value;
             }
         }
     });
@@ -41,9 +40,9 @@ describe("Form unformatter test", () => {
             } as FieldInfo);
         });
 
-        it("should have formatted value due editing", () => {
+        it("should have unformatted value due editing", () => {
             const data = applyActions([
-                form.actions.fieldEdit("field", 1234, undefined),
+                form.actions.fieldEdit("field", "1234", undefined),
                 form.actions.fieldStartEditing("field", undefined)
             ]);
             data.isValid.should.be.true();
@@ -56,9 +55,9 @@ describe("Form unformatter test", () => {
             } as FieldInfo);
         });
 
-        it("should have formatted value with decimals due editing", () => {
+        it("should have unformatted value with decimals due editing", () => {
             const data = applyActions([
-                form.actions.fieldEdit("field", 1234.01, undefined),
+                form.actions.fieldEdit("field", "1234.01", undefined),
                 form.actions.fieldStartEditing("field", undefined)
             ]);
             data.isValid.should.be.true();

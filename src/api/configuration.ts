@@ -11,22 +11,29 @@ export interface FieldConfiguration<T> {
      */
     parse?: (input: any) => T;
 
-    toDisplay?: (info: FieldValueInfo<T>) => any;
-}
+    /**
+     * Validates parsed value.
+     * Could throw exception to provide additional errors.
+     *
+     * This function would be called from selector if value were successfully parsed.
+     */
+    validate?: (value: T) => void;
 
-export interface FieldValueInfo<T> {
-    /** Input from the editor. */
-    input: any;
+    /**
+     * Converts value for displaying in the editor if not in editing mode.
+     * If not provided an input value will be used.
+     *
+     * Only successfully parsed value would be formatted for display.
+     * Value is formatted in selector, state stores only raw used input.
+     */
+    formatForDisplay?: (input: T) => any;
 
-    /** Parser result (if value were parsed) */
-    parsedValue?: T;
-
-    /** Indicates if user is in editing process */
-    isEditing: boolean;
-
-    /** Indicates whether field were edited. */
-    isTouched: boolean;
-
-    /** Indicates if value were parsed. */
-    isParsed: boolean;
+    /**
+     * Converts value stored in state to a format
+     * convenient for editing.
+     * If not provided the value would not be converted.
+     *
+     * This function is called either for valid and invalid input.
+     */
+    formatForEditing?: (value: any) => any;
 }

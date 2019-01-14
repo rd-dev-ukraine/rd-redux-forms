@@ -1,7 +1,6 @@
 import { Action } from "redux";
 import {
     FieldInfo,
-    FieldValueInfo,
     FormActions,
     FormFieldsConfiguration,
     InvalidFormInfo,
@@ -103,6 +102,13 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         if (this.actions.isFieldEdit(action)) {
             return {
                 ...(state as any),
+                editing:
+                    state.editing && state.editing[action.field] === "unchanged"
+                        ? {
+                              ...(state.editing as any),
+                              [action.field]: "changed"
+                          }
+                        : state.editing,
                 fields: {
                     ...(state.fields as any),
                     [action.field]: action.value
@@ -116,7 +122,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 ...(state as any),
                 editing: {
                     ...(state.editing as any),
-                    [action.field]: true
+                    [action.field]: "unchanged"
                 }
             };
         }
@@ -175,10 +181,13 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 const fieldConfig = this.fieldConfiguration[fieldName];
 
                 const parser = fieldConfig.parse || ((v: any) => v);
-                const toDisplay = fieldConfig.toDisplay || ((info: FieldValueInfo<any>) => info.input);
+                const formatForDisplay = fieldConfig.formatForDisplay || ((value: any) => value);
+                const formatForEditing = fieldConfig.formatForEditing || ((value: any) => value);
+                // tslint:disable-next-line:no-empty
+                const validate = fieldConfig.validate || ((value: any) => {});
 
                 const rawValue = formValues[fieldName] as any;
-                const isFieldEditing = !!state.editing[fieldName];
+                const fieldEditingStatus = state.editing[fieldName];
                 const isFieldTouched = !!state.touched[fieldName];
 
                 // Successfully parsed
@@ -192,6 +201,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
 
                 try {
                     const parsedValue = parser(rawValue);
+                    validate(parsedValue);
 
                     if (fieldCustomErrors) {
                         // Parsed but has custom error set field
@@ -200,19 +210,17 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             errors: fieldCustomErrors,
                             hasCustomErrors: true,
                             isParsed: true,
-                            value: toDisplay({
-                                input: rawValue,
-                                isEditing: isFieldEditing,
-                                isParsed: true,
-                                isTouched: isFieldTouched,
-                                parsedValue
-                            }),
+                            value: !fieldEditingStatus
+                                ? formatForDisplay(parsedValue)
+                                : fieldEditingStatus === "unchanged"
+                                ? formatForEditing(rawValue)
+                                : rawValue,
                             visualState: CalculateVisualStateStrategies.default(
                                 state.validated,
                                 true,
                                 true,
                                 isFieldTouched,
-                                isFieldEditing
+                                !!fieldEditingStatus
                             )
                         };
 
@@ -223,19 +231,17 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             data: parsedValue,
                             hasCustomErrors: false,
                             isParsed: true,
-                            value: toDisplay({
-                                input: rawValue,
-                                isEditing: isFieldEditing,
-                                isParsed: true,
-                                isTouched: isFieldTouched,
-                                parsedValue
-                            }),
+                            value: !fieldEditingStatus
+                                ? formatForDisplay(parsedValue)
+                                : fieldEditingStatus === "unchanged"
+                                ? formatForEditing(rawValue)
+                                : rawValue,
                             visualState: CalculateVisualStateStrategies.default(
                                 state.validated,
                                 true,
                                 false,
                                 isFieldTouched,
-                                isFieldEditing
+                                !!fieldEditingStatus
                             )
                         };
 
@@ -246,19 +252,13 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                         errors: [e.message, ...(fieldCustomErrors || [])],
                         hasCustomErrors: !!fieldCustomErrors,
                         isParsed: false,
-                        value: toDisplay({
-                            input: rawValue,
-                            isEditing: isFieldEditing,
-                            isParsed: false,
-                            isTouched: isFieldTouched,
-                            parsedValue: undefined
-                        }),
+                        value: fieldEditingStatus === "unchanged" ? formatForEditing(rawValue) : rawValue,
                         visualState: CalculateVisualStateStrategies.default(
                             state.validated,
                             false,
                             !!fieldCustomErrors,
                             isFieldTouched,
-                            isFieldEditing
+                            !!fieldEditingStatus
                         )
                     };
 

@@ -65,16 +65,17 @@ var RdReduxFormImpl = /** @class */ (function () {
             }
         };
         this.reducer = function (state, action) {
-            var _a, _b, _c;
+            var _a, _b, _c, _d;
             state = state || _this.state.empty();
             if (_this.actions.isSetData(action)) {
                 return __assign({}, state, { editing: action.resetState ? {} : state.editing, errors: action.resetState ? undefined : state.errors, fields: action.data, touched: action.resetState ? {} : state.touched, validated: action.resetState ? false : state.validated });
             }
             if (_this.actions.isFieldEdit(action)) {
-                return __assign({}, state, { fields: __assign({}, state.fields, (_a = {}, _a[action.field] = action.value, _a)), touched: __assign({}, state.touched, (_b = {}, _b[action.field] = true, _b)) });
+                return __assign({}, state, { editing: state.editing && state.editing[action.field] === "unchanged"
+                        ? __assign({}, state.editing, (_a = {}, _a[action.field] = "changed", _a)) : state.editing, fields: __assign({}, state.fields, (_b = {}, _b[action.field] = action.value, _b)), touched: __assign({}, state.touched, (_c = {}, _c[action.field] = true, _c)) });
             }
             if (_this.actions.isFieldStartEditing(action)) {
-                return __assign({}, state, { editing: __assign({}, state.editing, (_c = {}, _c[action.field] = true, _c)) });
+                return __assign({}, state, { editing: __assign({}, state.editing, (_d = {}, _d[action.field] = "unchanged", _d)) });
             }
             if (_this.actions.isFieldEndEditing(action)) {
                 var editing = __assign({}, state.editing);
@@ -103,9 +104,12 @@ var RdReduxFormImpl = /** @class */ (function () {
                 var fieldName = n;
                 var fieldConfig = _this.fieldConfiguration[fieldName];
                 var parser = fieldConfig.parse || (function (v) { return v; });
-                var toDisplay = fieldConfig.toDisplay || (function (info) { return info.input; });
+                var formatForDisplay = fieldConfig.formatForDisplay || (function (value) { return value; });
+                var formatForEditing = fieldConfig.formatForEditing || (function (value) { return value; });
+                // tslint:disable-next-line:no-empty
+                var validate = fieldConfig.validate || (function (value) { });
                 var rawValue = formValues[fieldName];
-                var isFieldEditing = !!state.editing[fieldName];
+                var fieldEditingStatus = state.editing[fieldName];
                 var isFieldTouched = !!state.touched[fieldName];
                 // Successfully parsed
                 var fieldCustomErrors = !!state.errors &&
@@ -116,6 +120,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                     : undefined;
                 try {
                     var parsedValue = parser(rawValue);
+                    validate(parsedValue);
                     if (fieldCustomErrors) {
                         // Parsed but has custom error set field
                         var field = {
@@ -123,14 +128,12 @@ var RdReduxFormImpl = /** @class */ (function () {
                             errors: fieldCustomErrors,
                             hasCustomErrors: true,
                             isParsed: true,
-                            value: toDisplay({
-                                input: rawValue,
-                                isEditing: isFieldEditing,
-                                isParsed: true,
-                                isTouched: isFieldTouched,
-                                parsedValue: parsedValue
-                            }),
-                            visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(state.validated, true, true, isFieldTouched, isFieldEditing)
+                            value: !fieldEditingStatus
+                                ? formatForDisplay(parsedValue)
+                                : fieldEditingStatus === "unchanged"
+                                    ? formatForEditing(rawValue)
+                                    : rawValue,
+                            visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(state.validated, true, true, isFieldTouched, !!fieldEditingStatus)
                         };
                         return [fieldName, field];
                     }
@@ -140,14 +143,12 @@ var RdReduxFormImpl = /** @class */ (function () {
                             data: parsedValue,
                             hasCustomErrors: false,
                             isParsed: true,
-                            value: toDisplay({
-                                input: rawValue,
-                                isEditing: isFieldEditing,
-                                isParsed: true,
-                                isTouched: isFieldTouched,
-                                parsedValue: parsedValue
-                            }),
-                            visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(state.validated, true, false, isFieldTouched, isFieldEditing)
+                            value: !fieldEditingStatus
+                                ? formatForDisplay(parsedValue)
+                                : fieldEditingStatus === "unchanged"
+                                    ? formatForEditing(rawValue)
+                                    : rawValue,
+                            visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(state.validated, true, false, isFieldTouched, !!fieldEditingStatus)
                         };
                         return [fieldName, field];
                     }
@@ -157,14 +158,8 @@ var RdReduxFormImpl = /** @class */ (function () {
                         errors: [e.message].concat((fieldCustomErrors || [])),
                         hasCustomErrors: !!fieldCustomErrors,
                         isParsed: false,
-                        value: toDisplay({
-                            input: rawValue,
-                            isEditing: isFieldEditing,
-                            isParsed: false,
-                            isTouched: isFieldTouched,
-                            parsedValue: undefined
-                        }),
-                        visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(state.validated, false, !!fieldCustomErrors, isFieldTouched, isFieldEditing)
+                        value: fieldEditingStatus === "unchanged" ? formatForEditing(rawValue) : rawValue,
+                        visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(state.validated, false, !!fieldCustomErrors, isFieldTouched, !!fieldEditingStatus)
                     };
                     return [fieldName, field];
                 }

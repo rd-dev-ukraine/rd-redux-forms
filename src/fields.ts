@@ -5,11 +5,7 @@ export const fields = {
      * A field which doesn't change a value received from the editor.
      * Usable if editor returns a data in the required format.
      */
-    any: <T>(): FieldConfiguration<T> => ({
-        parse: (input: any) => input,
-        toDisplay: (info) => info.input
-    }),
-
+    any: <T>(): FieldConfiguration<T> => ({}),
     float: (
         digits: number = 2,
         required: boolean = true,
@@ -33,31 +29,22 @@ export const fields = {
 
             return parsed;
         },
-        toDisplay(info) {
-            if (!info.isParsed) {
-                return info.input;
-            }
-
-            if (info.parsedValue === null || info.parsedValue === undefined) {
+        formatForDisplay(value) {
+            if (value === null || value === undefined) {
                 return "";
             }
 
-            return info.parsedValue.toFixed(digits);
+            return value.toFixed(digits);
         }
     }),
-
     /** Binds a integer number to a text input. */
     int: (required: boolean = true, errorMessage?: string): FieldConfiguration<number | null> => ({
-        toDisplay(info) {
-            if (!info.isParsed) {
-                return info.input;
-            }
-
-            if (info.parsedValue === null || info.parsedValue === undefined) {
+        formatForDisplay(value) {
+            if (value === null || value === undefined) {
                 return "";
             }
 
-            return info.parsedValue.toFixed(0);
+            return value.toFixed(0);
         },
         parse(input: string = ""): number | null {
             input = `${input || ""}`.trim();
@@ -78,9 +65,8 @@ export const fields = {
             return parsed;
         }
     }),
-
     string: (required: boolean = true, errorMessage?: string): FieldConfiguration<string | null> => ({
-        toDisplay: (info) => info.input || "",
+        formatForDisplay: (value) => value || "",
         parse(input: string = ""): string {
             input = input || "";
 

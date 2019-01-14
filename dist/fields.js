@@ -5,10 +5,7 @@ exports.fields = {
      * A field which doesn't change a value received from the editor.
      * Usable if editor returns a data in the required format.
      */
-    any: function () { return ({
-        parse: function (input) { return input; },
-        toDisplay: function (info) { return info.input; }
-    }); },
+    any: function () { return ({}); },
     float: function (digits, required, errorMessage) {
         if (digits === void 0) { digits = 2; }
         if (required === void 0) { required = true; }
@@ -28,14 +25,11 @@ exports.fields = {
                 }
                 return parsed;
             },
-            toDisplay: function (info) {
-                if (!info.isParsed) {
-                    return info.input;
-                }
-                if (info.parsedValue === null || info.parsedValue === undefined) {
+            formatForDisplay: function (value) {
+                if (value === null || value === undefined) {
                     return "";
                 }
-                return info.parsedValue.toFixed(digits);
+                return value.toFixed(digits);
             }
         });
     },
@@ -43,14 +37,11 @@ exports.fields = {
     int: function (required, errorMessage) {
         if (required === void 0) { required = true; }
         return ({
-            toDisplay: function (info) {
-                if (!info.isParsed) {
-                    return info.input;
-                }
-                if (info.parsedValue === null || info.parsedValue === undefined) {
+            formatForDisplay: function (value) {
+                if (value === null || value === undefined) {
                     return "";
                 }
-                return info.parsedValue.toFixed(0);
+                return value.toFixed(0);
             },
             parse: function (input) {
                 if (input === void 0) { input = ""; }
@@ -72,7 +63,7 @@ exports.fields = {
     string: function (required, errorMessage) {
         if (required === void 0) { required = true; }
         return ({
-            toDisplay: function (info) { return info.input || ""; },
+            formatForDisplay: function (value) { return value || ""; },
             parse: function (input) {
                 if (input === void 0) { input = ""; }
                 input = input || "";

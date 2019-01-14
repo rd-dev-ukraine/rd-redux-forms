@@ -22,7 +22,7 @@ export interface ReduxFormState<T> {
     touched: { [P in keyof T]?: any };
 
     /** All fields were formatted since last validation or reset. */
-    editing: { [P in keyof T]?: any };
+    editing: { [P in keyof T]?: "unchanged" | "changed" };
 
     /**
      * True if form tried to validate.
