@@ -104,6 +104,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                 var fieldConfig = _this.fieldConfiguration[fieldName];
                 var parser = fieldConfig.parser || (function (v) { return v; });
                 var formatter = fieldConfig.formatter || (function (v) { return (v === null || v === undefined || isNaN(v) ? "" : "" + v); });
+                var unformatter = fieldConfig.unformatter || (function (v) { return v; });
                 var rawValue = formValues[fieldName];
                 var isFieldEditing = !!state.editing[fieldName];
                 var isFieldTouched = !!state.touched[fieldName];
@@ -123,7 +124,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                             errors: fieldCustomErrors,
                             hasCustomErrors: true,
                             isParsed: true,
-                            value: isFieldEditing ? rawValue : formatter(parsedValue),
+                            value: isFieldEditing ? unformatter(rawValue) : formatter(parsedValue),
                             visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(state.validated, true, true, isFieldTouched, isFieldEditing)
                         };
                         return [fieldName, field];
@@ -134,7 +135,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                             data: parsedValue,
                             hasCustomErrors: false,
                             isParsed: true,
-                            value: isFieldEditing ? rawValue : formatter(parsedValue),
+                            value: isFieldEditing ? unformatter(rawValue) : formatter(parsedValue),
                             visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(state.validated, true, false, isFieldTouched, isFieldEditing)
                         };
                         return [fieldName, field];
