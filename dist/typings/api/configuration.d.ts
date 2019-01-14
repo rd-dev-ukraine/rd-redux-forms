@@ -12,13 +12,6 @@ export interface FieldConfiguration<T> {
      */
     parse?: (input: any) => T;
     /**
-     * Validates parsed value.
-     * Could throw exception to provide additional errors.
-     *
-     * This function would be called from selector if value were successfully parsed.
-     */
-    validate?: (value: T) => void;
-    /**
      * Converts value for displaying in the editor if not in editing mode.
      * If not provided an input value will be used.
      *

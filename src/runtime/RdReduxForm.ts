@@ -165,7 +165,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         }
 
         return state;
-    }
+    };
 
     selector = (
         state: ReduxFormState<TFields>,
@@ -183,8 +183,6 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 const parser = fieldConfig.parse || ((v: any) => v);
                 const formatForDisplay = fieldConfig.formatForDisplay || ((value: any) => value);
                 const formatForEditing = fieldConfig.formatForEditing || ((value: any) => value);
-                // tslint:disable-next-line:no-empty
-                const validate = fieldConfig.validate || ((value: any) => {});
 
                 const rawValue = formValues[fieldName] as any;
                 const fieldEditingStatus = state.editing[fieldName];
@@ -201,7 +199,6 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
 
                 try {
                     const parsedValue = parser(rawValue);
-                    validate(parsedValue);
 
                     if (fieldCustomErrors) {
                         // Parsed but has custom error set field
@@ -300,5 +297,5 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
 
             return formInfo;
         }
-    }
+    };
 }

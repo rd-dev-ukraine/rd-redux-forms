@@ -106,8 +106,6 @@ var RdReduxFormImpl = /** @class */ (function () {
                 var parser = fieldConfig.parse || (function (v) { return v; });
                 var formatForDisplay = fieldConfig.formatForDisplay || (function (value) { return value; });
                 var formatForEditing = fieldConfig.formatForEditing || (function (value) { return value; });
-                // tslint:disable-next-line:no-empty
-                var validate = fieldConfig.validate || (function (value) { });
                 var rawValue = formValues[fieldName];
                 var fieldEditingStatus = state.editing[fieldName];
                 var isFieldTouched = !!state.touched[fieldName];
@@ -120,7 +118,6 @@ var RdReduxFormImpl = /** @class */ (function () {
                     : undefined;
                 try {
                     var parsedValue = parser(rawValue);
-                    validate(parsedValue);
                     if (fieldCustomErrors) {
                         // Parsed but has custom error set field
                         var field = {
