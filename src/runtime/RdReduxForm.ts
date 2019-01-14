@@ -1,6 +1,7 @@
 import { Action } from "redux";
 import {
     FieldInfo,
+    FieldValueInfo,
     FormActions,
     FormFieldsConfiguration,
     InvalidFormInfo,
@@ -173,10 +174,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 const fieldName: keyof TFields = n as any;
                 const fieldConfig = this.fieldConfiguration[fieldName];
 
-                const parser = fieldConfig.parser || ((v: any) => v);
-                const formatter =
-                    fieldConfig.formatter || ((v: any) => (v === null || v === undefined || isNaN(v) ? "" : "" + v));
-                const unformatter = fieldConfig.unformatter || ((v: any) => v);
+                const parser = fieldConfig.parse || ((v: any) => v);
+                const toDisplay = fieldConfig.toDisplay || ((info: FieldValueInfo<any>) => info.input);
 
                 const rawValue = formValues[fieldName] as any;
                 const isFieldEditing = !!state.editing[fieldName];
@@ -201,7 +200,13 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             errors: fieldCustomErrors,
                             hasCustomErrors: true,
                             isParsed: true,
-                            value: isFieldEditing ? unformatter(rawValue) : formatter(parsedValue),
+                            value: toDisplay({
+                                input: rawValue,
+                                isEditing: isFieldEditing,
+                                isParsed: true,
+                                isTouched: isFieldTouched,
+                                parsedValue
+                            }),
                             visualState: CalculateVisualStateStrategies.default(
                                 state.validated,
                                 true,
@@ -218,7 +223,13 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             data: parsedValue,
                             hasCustomErrors: false,
                             isParsed: true,
-                            value: isFieldEditing ? unformatter(rawValue) : formatter(parsedValue),
+                            value: toDisplay({
+                                input: rawValue,
+                                isEditing: isFieldEditing,
+                                isParsed: true,
+                                isTouched: isFieldTouched,
+                                parsedValue
+                            }),
                             visualState: CalculateVisualStateStrategies.default(
                                 state.validated,
                                 true,
@@ -235,7 +246,13 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                         errors: [e.message, ...(fieldCustomErrors || [])],
                         hasCustomErrors: !!fieldCustomErrors,
                         isParsed: false,
-                        value: rawValue,
+                        value: toDisplay({
+                            input: rawValue,
+                            isEditing: isFieldEditing,
+                            isParsed: false,
+                            isTouched: isFieldTouched,
+                            parsedValue: undefined
+                        }),
                         visualState: CalculateVisualStateStrategies.default(
                             state.validated,
                             false,

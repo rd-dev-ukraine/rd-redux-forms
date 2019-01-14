@@ -10,13 +10,21 @@ interface OneField {
 describe("Form unformatter test", () => {
     const form = createForm<OneField>("One field form", {
         field: {
-            formatter: (value) =>
-                (value || 0).toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    useGrouping: true
-                }),
-            parser: fields.float(2, true).parser,
-            unformatter: (value) => ((value || 0) === 0 ? "" : (value || 0).toString())
+            parse: fields.float(2, true).parse,
+            toDisplay: (info) => {
+                if (info.isParsed) {
+                    if (info.isEditing) {
+                        return info.parsedValue === 0 ? "" : (info.parsedValue || 0).toString();
+                    } else {
+                        return (info.parsedValue || 0).toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            useGrouping: true
+                        });
+                    }
+                } else {
+                    return info.input;
+                }
+            }
         }
     });
 
@@ -33,7 +41,7 @@ describe("Form unformatter test", () => {
             } as FieldInfo);
         });
 
-        it("should have formatted value after editing finished", () => {
+        it("should have formatted value due editing", () => {
             const data = applyActions([
                 form.actions.fieldEdit("field", 1234, undefined),
                 form.actions.fieldStartEditing("field", undefined)
@@ -48,7 +56,7 @@ describe("Form unformatter test", () => {
             } as FieldInfo);
         });
 
-        it("should have formatted value with decimals after editing finished", () => {
+        it("should have formatted value with decimals due editing", () => {
             const data = applyActions([
                 form.actions.fieldEdit("field", 1234.01, undefined),
                 form.actions.fieldStartEditing("field", undefined)
@@ -59,6 +67,48 @@ describe("Form unformatter test", () => {
                 hasCustomErrors: false,
                 isParsed: true,
                 value: "1234.01",
+                visualState: "none"
+            } as FieldInfo);
+        });
+
+        it("should display empty string for empty value due editing", () => {
+            const data = applyActions([
+                form.actions.fieldEdit("field", "", undefined),
+                form.actions.fieldStartEditing("field", undefined)
+            ]);
+            data.isValid.should.be.false();
+            data.fields.field.should.be.eql({
+                errors: ["Value is required."],
+                hasCustomErrors: false,
+                isParsed: false,
+                value: "",
+                visualState: "none"
+            } as FieldInfo);
+        });
+
+        it("should display empty string for zero value due editing", () => {
+            const data = applyActions([
+                form.actions.fieldEdit("field", "0", undefined),
+                form.actions.fieldStartEditing("field", undefined)
+            ]);
+            data.isValid.should.be.true();
+            data.fields.field.should.be.eql({
+                data: 0,
+                hasCustomErrors: false,
+                isParsed: true,
+                value: "",
+                visualState: "none"
+            } as FieldInfo);
+        });
+
+        it("should display '0.00' for zero if not editing", () => {
+            const data = applyActions([form.actions.fieldEdit("field", "0", undefined)]);
+            data.isValid.should.be.true();
+            data.fields.field.should.be.eql({
+                data: 0,
+                hasCustomErrors: false,
+                isParsed: true,
+                value: "0.00",
                 visualState: "none"
             } as FieldInfo);
         });

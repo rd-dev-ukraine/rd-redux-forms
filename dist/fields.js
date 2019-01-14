@@ -6,14 +6,14 @@ exports.fields = {
      * Usable if editor returns a data in the required format.
      */
     any: function () { return ({
-        formatter: function (input) { return input; },
-        parser: function (input) { return input; }
+        parse: function (input) { return input; },
+        toDisplay: function (info) { return info.input; }
     }); },
     float: function (digits, required, errorMessage) {
         if (digits === void 0) { digits = 2; }
         if (required === void 0) { required = true; }
         return ({
-            parser: function (input) {
+            parse: function (input) {
                 if (input === void 0) { input = ""; }
                 input = ("" + (input || "")).trim();
                 if (!input) {
@@ -28,11 +28,14 @@ exports.fields = {
                 }
                 return parsed;
             },
-            formatter: function (input) {
-                if (input === null || input === undefined) {
+            toDisplay: function (info) {
+                if (!info.isParsed) {
+                    return info.input;
+                }
+                if (info.parsedValue === null || info.parsedValue === undefined) {
                     return "";
                 }
-                return input.toFixed(digits);
+                return info.parsedValue.toFixed(digits);
             }
         });
     },
@@ -40,7 +43,16 @@ exports.fields = {
     int: function (required, errorMessage) {
         if (required === void 0) { required = true; }
         return ({
-            parser: function (input) {
+            toDisplay: function (info) {
+                if (!info.isParsed) {
+                    return info.input;
+                }
+                if (info.parsedValue === null || info.parsedValue === undefined) {
+                    return "";
+                }
+                return info.parsedValue.toFixed(0);
+            },
+            parse: function (input) {
                 if (input === void 0) { input = ""; }
                 input = ("" + (input || "")).trim();
                 if (!input) {
@@ -54,27 +66,21 @@ exports.fields = {
                     throw new Error(errorMessage || "Value is not a valid number");
                 }
                 return parsed;
-            },
-            formatter: function (input) {
-                if (input === undefined || input === null) {
-                    return "";
-                }
-                return input.toFixed(0);
             }
         });
     },
     string: function (required, errorMessage) {
         if (required === void 0) { required = true; }
         return ({
-            parser: function (input) {
+            toDisplay: function (info) { return info.input || ""; },
+            parse: function (input) {
                 if (input === void 0) { input = ""; }
                 input = input || "";
                 if (!input.trim() && required) {
                     throw new Error(errorMessage || "Value is required");
                 }
                 return input;
-            },
-            formatter: function (input) { return input || ""; }
+            }
         });
     }
 };

@@ -6,8 +6,8 @@ export const fields = {
      * Usable if editor returns a data in the required format.
      */
     any: <T>(): FieldConfiguration<T> => ({
-        formatter: (input: any) => input,
-        parser: (input: any) => input
+        parse: (input: any) => input,
+        toDisplay: (info) => info.input
     }),
 
     float: (
@@ -15,7 +15,7 @@ export const fields = {
         required: boolean = true,
         errorMessage?: string
     ): FieldConfiguration<number | null> => ({
-        parser(input: string = ""): number | null {
+        parse(input: string = ""): number | null {
             input = `${input || ""}`.trim();
 
             if (!input) {
@@ -33,18 +33,33 @@ export const fields = {
 
             return parsed;
         },
-        formatter(input: number | null | undefined): string {
-            if (input === null || input === undefined) {
+        toDisplay(info) {
+            if (!info.isParsed) {
+                return info.input;
+            }
+
+            if (info.parsedValue === null || info.parsedValue === undefined) {
                 return "";
             }
 
-            return input.toFixed(digits);
+            return info.parsedValue.toFixed(digits);
         }
     }),
 
     /** Binds a integer number to a text input. */
     int: (required: boolean = true, errorMessage?: string): FieldConfiguration<number | null> => ({
-        parser(input: string = ""): number | null {
+        toDisplay(info) {
+            if (!info.isParsed) {
+                return info.input;
+            }
+
+            if (info.parsedValue === null || info.parsedValue === undefined) {
+                return "";
+            }
+
+            return info.parsedValue.toFixed(0);
+        },
+        parse(input: string = ""): number | null {
             input = `${input || ""}`.trim();
 
             if (!input) {
@@ -61,18 +76,12 @@ export const fields = {
             }
 
             return parsed;
-        },
-        formatter(input: number | undefined | null): string {
-            if (input === undefined || input === null) {
-                return "";
-            }
-
-            return input.toFixed(0);
         }
     }),
 
     string: (required: boolean = true, errorMessage?: string): FieldConfiguration<string | null> => ({
-        parser(input: string = ""): string {
+        toDisplay: (info) => info.input || "",
+        parse(input: string = ""): string {
             input = input || "";
 
             if (!input.trim() && required) {
@@ -80,7 +89,6 @@ export const fields = {
             }
 
             return input;
-        },
-        formatter: (input: string | null): string => input || ""
+        }
     })
 };
