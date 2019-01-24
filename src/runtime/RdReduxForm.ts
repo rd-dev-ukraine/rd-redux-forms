@@ -96,7 +96,6 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 editing: action.resetState ? {} : state.editing,
                 errors: action.resetState ? undefined : state.errors,
                 fields: action.data,
-                selectorResultCache: undefined,
                 touched: action.resetState ? {} : state.touched,
                 validated: action.resetState ? false : state.validated
             };
@@ -116,7 +115,6 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     ...(state.fields as any),
                     [action.field]: action.value
                 },
-                selectorResultCache: undefined,
                 touched: { ...(state.touched as any), [action.field]: true }
             };
         }
@@ -153,7 +151,6 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 ...(state as any),
                 errors: undefined,
                 formatted: {},
-                selectorResultCache: undefined,
                 touched: {},
                 validated: false
             };
@@ -164,7 +161,6 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 ...(state as any),
                 errors: action.errors,
                 formatted: {},
-                selectorResultCache: undefined,
                 touched: {},
                 validated: true
             };

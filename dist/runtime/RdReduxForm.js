@@ -69,11 +69,11 @@ var RdReduxFormImpl = /** @class */ (function () {
             var _a, _b, _c, _d;
             state = state || _this.state.empty();
             if (_this.actions.isSetData(action)) {
-                return __assign({}, state, { editing: action.resetState ? {} : state.editing, errors: action.resetState ? undefined : state.errors, fields: action.data, selectorResultCache: undefined, touched: action.resetState ? {} : state.touched, validated: action.resetState ? false : state.validated });
+                return __assign({}, state, { editing: action.resetState ? {} : state.editing, errors: action.resetState ? undefined : state.errors, fields: action.data, touched: action.resetState ? {} : state.touched, validated: action.resetState ? false : state.validated });
             }
             if (_this.actions.isFieldEdit(action)) {
                 return __assign({}, state, { editing: state.editing && state.editing[action.field] === "unchanged"
-                        ? __assign({}, state.editing, (_a = {}, _a[action.field] = "changed", _a)) : state.editing, fields: __assign({}, state.fields, (_b = {}, _b[action.field] = action.value, _b)), selectorResultCache: undefined, touched: __assign({}, state.touched, (_c = {}, _c[action.field] = true, _c)) });
+                        ? __assign({}, state.editing, (_a = {}, _a[action.field] = "changed", _a)) : state.editing, fields: __assign({}, state.fields, (_b = {}, _b[action.field] = action.value, _b)), touched: __assign({}, state.touched, (_c = {}, _c[action.field] = true, _c)) });
             }
             if (_this.actions.isFieldStartEditing(action)) {
                 return __assign({}, state, { editing: __assign({}, state.editing, (_d = {}, _d[action.field] = "unchanged", _d)) });
@@ -87,10 +87,10 @@ var RdReduxFormImpl = /** @class */ (function () {
                 return __assign({}, state, { errors: state.errors, formatted: {}, touched: {}, validated: true });
             }
             if (_this.actions.isReset(action)) {
-                return __assign({}, state, { errors: undefined, formatted: {}, selectorResultCache: undefined, touched: {}, validated: false });
+                return __assign({}, state, { errors: undefined, formatted: {}, touched: {}, validated: false });
             }
             if (_this.actions.isSetErrors(action)) {
-                return __assign({}, state, { errors: action.errors, formatted: {}, selectorResultCache: undefined, touched: {}, validated: true });
+                return __assign({}, state, { errors: action.errors, formatted: {}, touched: {}, validated: true });
             }
             return state;
         };
