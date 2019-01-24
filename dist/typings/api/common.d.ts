@@ -17,7 +17,7 @@ export interface FormErrors<T> {
 export interface ReduxFormState<T> {
     /** Field values. */
     fields: {
-        [P in keyof T]: any;
+        [P in keyof T]?: any;
     };
     /** All fields were changed since last validation or reset. */
     touched: {

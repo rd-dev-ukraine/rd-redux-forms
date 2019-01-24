@@ -63,7 +63,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
          * Gets the state for the form with data.
          * Do the same thing as dispatching setData action with resetting, but can be used in reducer.
          */
-        withData(data: TFields): ReduxFormState<TFields> {
+        withData(data: Partial<TFields>): ReduxFormState<TFields> {
             return {
                 editing: {},
                 fields: data,
@@ -165,7 +165,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         }
 
         return state;
-    };
+    }
 
     selector = (
         state: ReduxFormState<TFields>,
@@ -297,5 +297,5 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
 
             return formInfo;
         }
-    };
+    }
 }

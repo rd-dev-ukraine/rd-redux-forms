@@ -23,7 +23,7 @@ export declare class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFie
          * Gets the state for the form with data.
          * Do the same thing as dispatching setData action with resetting, but can be used in reducer.
          */
-        withData(data: TFields): ReduxFormState<TFields>;
+        withData(data: Partial<TFields>): ReduxFormState<TFields>;
     };
     constructor(title: string, fieldConfiguration: FormFieldsConfiguration<TFields>);
     reducer: <TState extends ReduxFormState<TFields>>(state: TState, action: Action<any>) => TState;

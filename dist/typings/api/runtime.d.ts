@@ -39,7 +39,7 @@ export interface RdReduxForm<TFields, TMeta> {
          * Creates state for form with data.
          * Use it instead of dispatching setData action.
          */
-        withData(data: TFields): ReduxFormState<TFields>;
+        withData(data: Partial<TFields>): ReduxFormState<TFields>;
     };
     types: {
         fields: TFields;
