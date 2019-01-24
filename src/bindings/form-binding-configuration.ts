@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Dispatch } from "redux";
 import { FieldInfo } from "../api";
 import { InvalidFormInfo, RdReduxForm, ValidFormInfo } from "../index";
@@ -56,7 +55,7 @@ export class FormBindingConfiguration
             throw new Error("Fields configuration is not defined.");
         }
 
-        this.fieldsConfig = fieldsConfig;
+        this.fieldsConfig = fieldsConfig(new FieldBindingConfiguration());
 
         return this;
     }

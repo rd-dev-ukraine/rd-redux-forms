@@ -55,7 +55,7 @@ var FormBindingConfiguration = /** @class */ (function () {
         if (!fieldsConfig) {
             throw new Error("Fields configuration is not defined.");
         }
-        this.fieldsConfig = fieldsConfig;
+        this.fieldsConfig = fieldsConfig(new field_binding_configuration_1.FieldBindingConfiguration());
         return this;
     };
     FormBindingConfiguration.prototype.bind = function (dispatch, meta) {

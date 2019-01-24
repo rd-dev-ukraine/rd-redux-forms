@@ -2,7 +2,7 @@ import "mocha";
 import "should";
 
 import { createForm, fields } from "../src";
-import { field, reactBinding } from "../src/bindings";
+import { reactBinding } from "../src/bindings";
 
 describe("Form binding configuration", () => {
     it("must not throw errors", () => {
@@ -22,11 +22,9 @@ describe("Form binding configuration", () => {
             .onBlur()
             .end()
             .withForm(form)
-            .configureFields({
-                id: field()
-                    .submit()
-                    .onChange()
-            });
+            .configureFields((field) => ({
+                id: field.submit().onChange()
+            }));
 
         const events = binding.bind((a: any) => a, undefined);
 

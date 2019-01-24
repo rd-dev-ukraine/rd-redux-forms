@@ -88,8 +88,11 @@ export interface AnyFormBindingConfiguration {
     forAllFields(): FieldBindingConfiguration & { end(): AnyFormBindingConfiguration };
 }
 
+export type FieldCustomConfig<TFields> = { [P in keyof TFields]?: FieldBindingFactory };
+export type FieldCustomConfigFactory<TFields> = (field: FieldBindingConfiguration) => FieldCustomConfig<TFields>;
+
 export interface TypedFormBindingTypeConfiguration<TFields, TMeta> extends BindingFactory<TFields, TMeta> {
-    configureFields(fieldsConfig: { [P in keyof TFields]?: FieldBindingFactory }): BindingFactory<TFields, TMeta>;
+    configureFields(fieldsConfig: FieldCustomConfigFactory<TFields>): BindingFactory<TFields, TMeta>;
 }
 
 export interface FieldBindingFactory {
