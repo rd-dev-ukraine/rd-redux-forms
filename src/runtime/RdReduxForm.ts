@@ -12,6 +12,7 @@ import {
     ValidFormInfo
 } from "../api";
 import { FormBindings } from "../bindings";
+import { shallowCompareArrays, shallowCompareObjectsWithSameProps } from "../utils";
 import { FormActionsImpl } from "./FormActionsImpl";
 import { CalculateVisualStateStrategies } from "./VisualStateCalc";
 
@@ -63,6 +64,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
          * Gets the state for the form with data.
          * Do the same thing as dispatching setData action with resetting, but can be used in reducer.
          */
+
         withData(data: Partial<TFields>): ReduxFormState<TFields> {
             return {
                 editing: {},
@@ -94,6 +96,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 editing: action.resetState ? {} : state.editing,
                 errors: action.resetState ? undefined : state.errors,
                 fields: action.data,
+                selectorResultCache: undefined,
                 touched: action.resetState ? {} : state.touched,
                 validated: action.resetState ? false : state.validated
             };
@@ -113,6 +116,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                     ...(state.fields as any),
                     [action.field]: action.value
                 },
+                selectorResultCache: undefined,
                 touched: { ...(state.touched as any), [action.field]: true }
             };
         }
@@ -149,6 +153,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 ...(state as any),
                 errors: undefined,
                 formatted: {},
+                selectorResultCache: undefined,
                 touched: {},
                 validated: false
             };
@@ -159,6 +164,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 ...(state as any),
                 errors: action.errors,
                 formatted: {},
+                selectorResultCache: undefined,
                 touched: {},
                 validated: true
             };
@@ -168,6 +174,20 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
     }
 
     selector = (
+        state: ReduxFormState<TFields>,
+        ...initialData: Array<Partial<TFields>>
+    ): ValidFormInfo<TFields> | InvalidFormInfo<TFields> => {
+        const result = this.selectorCore(state, ...initialData);
+
+        if (!state.selectorResultCache || !this.areSelectorResultsEqual(state.selectorResultCache, result)) {
+            state.selectorResultCache = result;
+        }
+
+        return state.selectorResultCache;
+    }
+
+    /** Calculate non-cached form state selection result */
+    private selectorCore = (
         state: ReduxFormState<TFields>,
         ...initialData: Array<Partial<TFields>>
     ): ValidFormInfo<TFields> | InvalidFormInfo<TFields> => {
@@ -297,5 +317,29 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
 
             return formInfo;
         }
+    }
+
+    private areSelectorResultsEqual = (
+        r1: ValidFormInfo<TFields> | InvalidFormInfo<TFields>,
+        r2: ValidFormInfo<TFields> | InvalidFormInfo<TFields>
+    ): boolean => {
+        if (r1.isValid !== r2.isValid) {
+            return false;
+        }
+
+        if (!r1.isValid && !r2.isValid && !shallowCompareArrays(r1.customFormError, r2.customFormError)) {
+            return false;
+        }
+
+        for (const fieldName of Object.keys(this.fieldConfiguration)) {
+            const f1 = (r1.fields as any)[fieldName] as FieldInfo;
+            const f2 = (r2.fields as any)[fieldName] as FieldInfo;
+
+            if (!shallowCompareObjectsWithSameProps(f1, f2)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

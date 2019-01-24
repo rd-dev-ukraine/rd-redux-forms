@@ -28,4 +28,7 @@ export declare class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFie
     constructor(title: string, fieldConfiguration: FormFieldsConfiguration<TFields>);
     reducer: <TState extends ReduxFormState<TFields>>(state: TState, action: Action<any>) => TState;
     selector: (state: ReduxFormState<TFields>, ...initialData: Partial<TFields>[]) => ValidFormInfo<TFields> | InvalidFormInfo<TFields>;
+    /** Calculate non-cached form state selection result */
+    private selectorCore;
+    private areSelectorResultsEqual;
 }

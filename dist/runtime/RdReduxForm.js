@@ -11,6 +11,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var utils_1 = require("../utils");
 var FormActionsImpl_1 = require("./FormActionsImpl");
 var VisualStateCalc_1 = require("./VisualStateCalc");
 var formCounter = 0;
@@ -68,11 +69,11 @@ var RdReduxFormImpl = /** @class */ (function () {
             var _a, _b, _c, _d;
             state = state || _this.state.empty();
             if (_this.actions.isSetData(action)) {
-                return __assign({}, state, { editing: action.resetState ? {} : state.editing, errors: action.resetState ? undefined : state.errors, fields: action.data, touched: action.resetState ? {} : state.touched, validated: action.resetState ? false : state.validated });
+                return __assign({}, state, { editing: action.resetState ? {} : state.editing, errors: action.resetState ? undefined : state.errors, fields: action.data, selectorResultCache: undefined, touched: action.resetState ? {} : state.touched, validated: action.resetState ? false : state.validated });
             }
             if (_this.actions.isFieldEdit(action)) {
                 return __assign({}, state, { editing: state.editing && state.editing[action.field] === "unchanged"
-                        ? __assign({}, state.editing, (_a = {}, _a[action.field] = "changed", _a)) : state.editing, fields: __assign({}, state.fields, (_b = {}, _b[action.field] = action.value, _b)), touched: __assign({}, state.touched, (_c = {}, _c[action.field] = true, _c)) });
+                        ? __assign({}, state.editing, (_a = {}, _a[action.field] = "changed", _a)) : state.editing, fields: __assign({}, state.fields, (_b = {}, _b[action.field] = action.value, _b)), selectorResultCache: undefined, touched: __assign({}, state.touched, (_c = {}, _c[action.field] = true, _c)) });
             }
             if (_this.actions.isFieldStartEditing(action)) {
                 return __assign({}, state, { editing: __assign({}, state.editing, (_d = {}, _d[action.field] = "unchanged", _d)) });
@@ -86,14 +87,26 @@ var RdReduxFormImpl = /** @class */ (function () {
                 return __assign({}, state, { errors: state.errors, formatted: {}, touched: {}, validated: true });
             }
             if (_this.actions.isReset(action)) {
-                return __assign({}, state, { errors: undefined, formatted: {}, touched: {}, validated: false });
+                return __assign({}, state, { errors: undefined, formatted: {}, selectorResultCache: undefined, touched: {}, validated: false });
             }
             if (_this.actions.isSetErrors(action)) {
-                return __assign({}, state, { errors: action.errors, formatted: {}, touched: {}, validated: true });
+                return __assign({}, state, { errors: action.errors, formatted: {}, selectorResultCache: undefined, touched: {}, validated: true });
             }
             return state;
         };
         this.selector = function (state) {
+            var initialData = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                initialData[_i - 1] = arguments[_i];
+            }
+            var result = _this.selectorCore.apply(_this, [state].concat(initialData));
+            if (!state.selectorResultCache || !_this.areSelectorResultsEqual(state.selectorResultCache, result)) {
+                state.selectorResultCache = result;
+            }
+            return state.selectorResultCache;
+        };
+        /** Calculate non-cached form state selection result */
+        this.selectorCore = function (state) {
             var initialData = [];
             for (var _i = 1; _i < arguments.length; _i++) {
                 initialData[_i - 1] = arguments[_i];
@@ -204,6 +217,23 @@ var RdReduxFormImpl = /** @class */ (function () {
                 };
                 return formInfo;
             }
+        };
+        this.areSelectorResultsEqual = function (r1, r2) {
+            if (r1.isValid !== r2.isValid) {
+                return false;
+            }
+            if (!r1.isValid && !r2.isValid && !utils_1.shallowCompareArrays(r1.customFormError, r2.customFormError)) {
+                return false;
+            }
+            for (var _i = 0, _a = Object.keys(_this.fieldConfiguration); _i < _a.length; _i++) {
+                var fieldName = _a[_i];
+                var f1 = r1.fields[fieldName];
+                var f2 = r2.fields[fieldName];
+                if (!utils_1.shallowCompareObjectsWithSameProps(f1, f2)) {
+                    return false;
+                }
+            }
+            return true;
         };
         if (!title) {
             throw new Error("Form title is not defined.");

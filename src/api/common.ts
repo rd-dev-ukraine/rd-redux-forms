@@ -14,15 +14,15 @@ export interface FormErrors<T> {
 /**
  * App state for the one form.
  */
-export interface ReduxFormState<T> {
+export interface ReduxFormState<TFields> {
     /** Field values. */
-    fields: { [P in keyof T]?: any };
+    fields: { [P in keyof TFields]?: any };
 
     /** All fields were changed since last validation or reset. */
-    touched: { [P in keyof T]?: any };
+    touched: { [P in keyof TFields]?: any };
 
     /** All fields were formatted since last validation or reset. */
-    editing: { [P in keyof T]?: "unchanged" | "changed" };
+    editing: { [P in keyof TFields]?: "unchanged" | "changed" };
 
     /**
      * True if form tried to validate.
@@ -30,7 +30,9 @@ export interface ReduxFormState<T> {
     validated: boolean;
 
     /** Optional external errors. */
-    errors?: FormErrors<T>;
+    errors?: FormErrors<TFields>;
+
+    selectorResultCache?: ValidFormInfo<TFields> | InvalidFormInfo<TFields>;
 }
 
 export interface FormInfo<T> {
