@@ -1,30 +1,30 @@
 import * as React from "react";
 
 /**
- * Contains event handlers for form and inputs.
+ * Result of the event bindings for the RdReduxForm.
  */
-export interface RdReduxFormBindings<TFields> {
-    form: FormElementBindings;
-    fields: { [Field in keyof TFields]: FieldBindings };
+export interface RdEventBindings<TFields> {
+    form: FormEventBindings;
+    fields: { [Field in keyof TFields]: FieldEventBindings };
 }
 
 /**
  * Object contains a event handlers and property values for React <form> element.
  */
-export interface FormElementBindings {
+export interface FormEventBindings {
     onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
     [eventOrProp: string]: any;
 }
 
-export type FieldBindings = InputFieldBindings | DirectValueBindings;
+export type FieldEventBindings = InputFieldEventBindings | DirectValueEventBindings;
 
-export interface DirectValueBindings {
+export interface DirectValueEventBindings {
     onChange?: (value: any) => void;
     onFocus?: () => void;
     onBlur?: () => void;
 }
 
-export interface InputFieldBindings {
+export interface InputFieldEventBindings {
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onFocus?: () => void;
     onBlur?: () => void;

@@ -1,2 +1,2 @@
-export * from "./binding-runtime-api";
-export * from "./binding-configuraiton-api";
+export * from "./api";
+export * from "./configuration";
