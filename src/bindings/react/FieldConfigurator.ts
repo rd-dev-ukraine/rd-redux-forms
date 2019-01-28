@@ -1,5 +1,5 @@
-import { RdReduxForm } from "../../../api";
-import { FieldEventBindingFactory } from "../api";
+import { RdReduxForm } from "../../api";
+import { FieldEventBindingFactory } from "./RdEventBindingsConfiguration";
 
 export interface FieldEventBindingConfigurator<TFields, TMeta> extends FieldEventBindingFactory<TFields, TMeta> {
     submitOn(events: FieldActionEvents): this;
@@ -24,8 +24,6 @@ export interface EventConfiguration {
 }
 
 const a: FieldEventBindingConfigurator<{ a: string; b: number }, {}> = {} as any;
-
-a.submitOn((e) => [e.onBlur()]).editOn((e) => [e.onChange(), e.onFocus()]);
 
 // This should be a field event binding factory
 const defaultFieldConfigurator: FieldEventBindingFactory<any, any> = (

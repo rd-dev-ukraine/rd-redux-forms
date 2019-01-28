@@ -1,5 +1,5 @@
 import { Dispatch } from "redux";
-import { RdReduxForm } from "../../../api";
+import { RdReduxForm } from "../../api";
 import { FieldEventBindings, FormEventBindings } from "./RdEventBindings";
 
 export interface RdEventBindingsConfiguration<TFields, TMeta> {

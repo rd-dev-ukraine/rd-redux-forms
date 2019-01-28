@@ -1,10 +1,7 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var field_binding_configuration_1 = require("./field-binding-configuration");
-var form_binding_configuration_1 = require("./form-binding-configuration");
-exports.reactBinding = new form_binding_configuration_1.FormBindingConfiguration();
-function field() {
-    return new field_binding_configuration_1.FieldBindingConfiguration();
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
-exports.field = field;
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(require("./reactEventBindings"));
 //# sourceMappingURL=index.js.map
