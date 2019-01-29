@@ -7,6 +7,10 @@ interface OneField {
     field: number | null;
 }
 
+interface BugFields {
+    amount: number;
+}
+
 describe("Form unformatter test", () => {
     const form = createForm<OneField>("One field form", {
         field: {
@@ -25,6 +29,26 @@ describe("Form unformatter test", () => {
                 return value;
             }
         }
+    });
+
+    const buggableForm = createForm<BugFields>("BUG FORM TEST", {
+        amount: {
+            ...fields.float(2, true),
+            formatForDisplay(value: any) {
+                if (value === null || value === undefined || (value as any) === "") {
+                    return "";
+                }
+
+                return (fields as any).float(2, true).formatForDisplay(value);
+            },
+            formatForEditing(value: any) {
+                if (value === 0 || value === "0" || parseFloat(value) === 0) {
+                    return "";
+                }
+
+                return value;
+            }
+        } as any
     });
 
     describe("form field", () => {
@@ -110,6 +134,19 @@ describe("Form unformatter test", () => {
                 value: "0.00",
                 visualState: "none"
             } as FieldInfo);
+        });
+    });
+
+    describe("reproduce bug with editing", () => {
+        it("should have an empty string value on start editing", () => {
+            let state = buggableForm.state.withData({
+                amount: 0
+            });
+            state = buggableForm.reducer(state, buggableForm.actions.fieldStartEditing("amount"));
+
+            const result = buggableForm.selector(state);
+
+            result.fields.amount.value.should.be.eql("");
         });
     });
 

@@ -40,7 +40,12 @@ exports.shallowCompareObjectsWithSameProps = function (obj1, obj2) {
         }
         if (Array.isArray(v1)) {
             if (Array.isArray(v2)) {
-                return exports.shallowCompareArrays(v1, v2);
+                if (!exports.shallowCompareArrays(v1, v2)) {
+                    return false;
+                }
+                else {
+                    continue;
+                }
             }
             else {
                 return false;

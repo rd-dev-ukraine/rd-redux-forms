@@ -48,7 +48,11 @@ export const shallowCompareObjectsWithSameProps = (obj1: any, obj2: any): boolea
 
         if (Array.isArray(v1)) {
             if (Array.isArray(v2)) {
-                return shallowCompareArrays(v1, v2);
+                if (!shallowCompareArrays(v1, v2)) {
+                    return false;
+                } else {
+                    continue;
+                }
             } else {
                 return false;
             }
