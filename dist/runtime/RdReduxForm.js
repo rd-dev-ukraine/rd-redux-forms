@@ -131,6 +131,11 @@ var RdReduxFormImpl = /** @class */ (function () {
                     : undefined;
                 try {
                     var parsedValue = parser(rawValue);
+                    var editorValue = !fieldEditingStatus
+                        ? formatForDisplay(parsedValue)
+                        : fieldEditingStatus === "unchanged"
+                            ? formatForEditing(rawValue)
+                            : rawValue;
                     if (fieldCustomErrors) {
                         // Parsed but has custom error set field
                         var field = {
@@ -138,11 +143,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                             errors: fieldCustomErrors,
                             hasCustomErrors: true,
                             isParsed: true,
-                            value: !fieldEditingStatus
-                                ? formatForDisplay(parsedValue)
-                                : fieldEditingStatus === "unchanged"
-                                    ? formatForEditing(rawValue)
-                                    : rawValue,
+                            value: editorValue,
                             visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(state.validated, true, true, isFieldTouched, !!fieldEditingStatus)
                         };
                         return [fieldName, field];
@@ -153,11 +154,7 @@ var RdReduxFormImpl = /** @class */ (function () {
                             data: parsedValue,
                             hasCustomErrors: false,
                             isParsed: true,
-                            value: !fieldEditingStatus
-                                ? formatForDisplay(parsedValue)
-                                : fieldEditingStatus === "unchanged"
-                                    ? formatForEditing(rawValue)
-                                    : rawValue,
+                            value: editorValue,
                             visualState: VisualStateCalc_1.CalculateVisualStateStrategies.default(state.validated, true, false, isFieldTouched, !!fieldEditingStatus)
                         };
                         return [fieldName, field];

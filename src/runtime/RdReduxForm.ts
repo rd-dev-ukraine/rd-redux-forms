@@ -215,6 +215,11 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
 
                 try {
                     const parsedValue = parser(rawValue);
+                    const editorValue = !fieldEditingStatus
+                        ? formatForDisplay(parsedValue)
+                        : fieldEditingStatus === "unchanged"
+                        ? formatForEditing(rawValue)
+                        : rawValue;
 
                     if (fieldCustomErrors) {
                         // Parsed but has custom error set field
@@ -223,11 +228,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             errors: fieldCustomErrors,
                             hasCustomErrors: true,
                             isParsed: true,
-                            value: !fieldEditingStatus
-                                ? formatForDisplay(parsedValue)
-                                : fieldEditingStatus === "unchanged"
-                                ? formatForEditing(rawValue)
-                                : rawValue,
+                            value: editorValue,
                             visualState: CalculateVisualStateStrategies.default(
                                 state.validated,
                                 true,
@@ -244,11 +245,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                             data: parsedValue,
                             hasCustomErrors: false,
                             isParsed: true,
-                            value: !fieldEditingStatus
-                                ? formatForDisplay(parsedValue)
-                                : fieldEditingStatus === "unchanged"
-                                ? formatForEditing(rawValue)
-                                : rawValue,
+                            value: editorValue,
                             visualState: CalculateVisualStateStrategies.default(
                                 state.validated,
                                 true,
