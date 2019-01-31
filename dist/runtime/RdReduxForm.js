@@ -101,7 +101,21 @@ var RdReduxFormImpl = /** @class */ (function () {
             }
             var result = _this.selectorCore.apply(_this, [state].concat(initialData));
             if (!state.selectorResultCache || !_this.areSelectorResultsEqual(state.selectorResultCache, result)) {
-                state.selectorResultCache = result;
+                if (state.selectorResultCache) {
+                    // Replace unchanged fields with cached versions
+                    var cachedResult_1 = state.selectorResultCache;
+                    state.selectorResultCache = Object.keys(_this.fieldConfiguration).reduce(function (r, fieldName) {
+                        var cachedField = cachedResult_1.fields[fieldName];
+                        var newField = result.fields[fieldName];
+                        if (areFieldsEqual(cachedField, newField)) {
+                            result.fields[fieldName] = cachedField;
+                        }
+                        return result;
+                    }, result);
+                }
+                else {
+                    state.selectorResultCache = result;
+                }
             }
             return state.selectorResultCache;
         };
@@ -243,4 +257,7 @@ var RdReduxFormImpl = /** @class */ (function () {
     return RdReduxFormImpl;
 }());
 exports.RdReduxFormImpl = RdReduxFormImpl;
+function areFieldsEqual(f1, f2) {
+    return utils_1.shallowCompareObjectsWithSameProps(f1, f2);
+}
 //# sourceMappingURL=RdReduxForm.js.map

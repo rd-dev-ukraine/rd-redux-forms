@@ -176,7 +176,23 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         const result = this.selectorCore(state, ...initialData);
 
         if (!state.selectorResultCache || !this.areSelectorResultsEqual(state.selectorResultCache, result)) {
-            state.selectorResultCache = result;
+            if (state.selectorResultCache) {
+                // Replace unchanged fields with cached versions
+                const cachedResult = state.selectorResultCache;
+
+                state.selectorResultCache = Object.keys(this.fieldConfiguration).reduce((r, fieldName) => {
+                    const cachedField = (cachedResult.fields as any)[fieldName] as FieldInfo;
+                    const newField = (result.fields as any)[fieldName] as FieldInfo;
+
+                    if (areFieldsEqual(cachedField, newField)) {
+                        (result.fields as any)[fieldName] = cachedField;
+                    }
+
+                    return result;
+                }, result);
+            } else {
+                state.selectorResultCache = result;
+            }
         }
 
         return state.selectorResultCache;
@@ -335,4 +351,8 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
 
         return true;
     }
+}
+
+function areFieldsEqual(f1: FieldInfo | null | undefined, f2: FieldInfo | null | undefined): boolean {
+    return shallowCompareObjectsWithSameProps(f1, f2);
 }

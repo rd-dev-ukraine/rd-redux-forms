@@ -1,6 +1,6 @@
 {
   "name": "rd-redux-forms",
-  "version": "5.1.1",
+  "version": "5.1.3",
   "private": false,
   "description": "HTML forms for react and redux",
   "keywords": [
