@@ -12,6 +12,7 @@ export interface FormActions<TFields, TMeta = undefined> {
         VALIDATE: string;
         SET_ERRORS: string;
         RESET: string;
+        RESET_FIELD_STATE: string;
     };
 
     /**
@@ -19,6 +20,12 @@ export interface FormActions<TFields, TMeta = undefined> {
      * optionally resets form to an initial state (ie reset all edit/formatted flags on fields).
      */
     setData(data: Partial<TFields>, resetState?: boolean, meta?: TMeta): FormSetDataAction<TFields, TMeta>;
+
+    /**
+     * Reset the touched and editing state of the given fields
+     * to default values (non touched and non editing).
+     */
+    resetFieldState(fields: Array<keyof TFields>, meta?: TMeta): ResetFieldStateAction<TFields, TMeta>;
 
     /**
      * Sets the value to the field.
@@ -69,6 +76,8 @@ export interface FormActions<TFields, TMeta = undefined> {
      * Checks if action is set data action.
      */
     isSetData(action?: Action): action is FormSetDataAction<TFields, TMeta>;
+
+    isResetFieldState(action?: Action): action is ResetFieldStateAction<TFields, TMeta>;
 
     /**
      * Checks if action is field edit action.
@@ -131,6 +140,10 @@ export interface FormResetAction<TMeta = undefined> extends RdReduxFormActionBas
 export interface FormSetDataAction<TFields, TMeta = undefined> extends RdReduxFormActionBase<TMeta> {
     data: Partial<TFields>;
     resetState: boolean;
+}
+
+export interface ResetFieldStateAction<TFields, TMeta = undefined> extends RdReduxFormActionBase<TMeta> {
+    fields: Array<keyof TFields>;
 }
 
 export interface FormSetErrorsAction<TFields, TMeta = undefined> extends RdReduxFormActionBase<TMeta> {

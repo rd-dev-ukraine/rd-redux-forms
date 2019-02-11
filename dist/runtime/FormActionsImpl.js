@@ -33,6 +33,18 @@ var FormActionsImpl = /** @class */ (function () {
             }
             return { data: data, form: _this.title, meta: meta, resetState: resetState, type: _this.types.SET_DATA };
         };
+        /**
+         * Sets the values for the selected fields and optionally resets state for provided fields only.
+         */
+        this.resetFieldState = function (fields, meta) {
+            if (meta === void 0) { meta = undefined; }
+            return {
+                fields: fields,
+                form: _this.title,
+                meta: meta,
+                type: _this.types.RESET_FIELD_STATE
+            };
+        };
         this.validate = function (meta) {
             if (meta === void 0) { meta = undefined; }
             return { form: _this.title, meta: meta, type: _this.types.VALIDATE };
@@ -51,6 +63,9 @@ var FormActionsImpl = /** @class */ (function () {
         };
         this.isSetData = function (action) {
             return !!action && action.type === _this.types.SET_DATA;
+        };
+        this.isResetFieldState = function (action) {
+            return !!action && action.type === _this.types.RESET_FIELD_STATE;
         };
         this.isFieldEdit = function (action) {
             return !!action && action.type === _this.types.FIELD_EDIT;
@@ -92,6 +107,7 @@ var FormActionsImpl = /** @class */ (function () {
             FIELD_START_EDITING: this.makeActionType("START_FIELD_EDITING"),
             RESET: this.makeActionType("RESET"),
             SET_DATA: this.makeActionType("SET_DATA"),
+            RESET_FIELD_STATE: this.makeActionType("RESET_FIELD_STATE"),
             SET_ERRORS: this.makeActionType("SET_ERRORS"),
             VALIDATE: this.makeActionType("VALIDATE")
         };

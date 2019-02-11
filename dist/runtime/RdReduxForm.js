@@ -71,6 +71,22 @@ var RdReduxFormImpl = /** @class */ (function () {
             if (_this.actions.isSetData(action)) {
                 return __assign({}, state, { editing: action.resetState ? {} : state.editing, errors: action.resetState ? undefined : state.errors, fields: action.data, touched: action.resetState ? {} : state.touched, validated: action.resetState ? false : state.validated });
             }
+            if (_this.actions.isResetFieldState(action)) {
+                if (!action.fields || !action.fields.length) {
+                    return state;
+                }
+                return __assign({}, state, { editing: Object.keys(state.editing).reduce(function (result, field) {
+                        if (action.fields.indexOf(field) === -1) {
+                            result[field] = state.editing[field];
+                        }
+                        return result;
+                    }, {}), touched: Object.keys(state.touched).reduce(function (result, field) {
+                        if (action.fields.indexOf(field) === -1) {
+                            result[field] = state.touched[field];
+                        }
+                        return result;
+                    }, {}), errors: action });
+            }
             if (_this.actions.isFieldEdit(action)) {
                 return __assign({}, state, { editing: state.editing && state.editing[action.field] === "unchanged"
                         ? __assign({}, state.editing, (_a = {}, _a[action.field] = "changed", _a)) : state.editing, fields: __assign({}, state.fields, (_b = {}, _b[action.field] = action.value, _b)), touched: __assign({}, state.touched, (_c = {}, _c[action.field] = true, _c)) });

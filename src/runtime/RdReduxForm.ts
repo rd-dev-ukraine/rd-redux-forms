@@ -101,6 +101,35 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
             };
         }
 
+        if (this.actions.isResetFieldState(action)) {
+            if (!action.fields || !action.fields.length) {
+                return state;
+            }
+
+            return {
+                ...(state as any),
+                editing: Object.keys(state.editing).reduce(
+                    (result, field) => {
+                        if (action.fields.indexOf(field as any) === -1) {
+                            result[field] = (state.editing as any)[field];
+                        }
+                        return result;
+                    },
+                    {} as any
+                ),
+                touched: Object.keys(state.touched).reduce(
+                    (result, field) => {
+                        if (action.fields.indexOf(field as any) === -1) {
+                            result[field] = (state.touched as any)[field];
+                        }
+                        return result;
+                    },
+                    {} as any
+                ),
+                errors: action
+            };
+        }
+
         if (this.actions.isFieldEdit(action)) {
             return {
                 ...(state as any),
@@ -167,7 +196,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         }
 
         return state;
-    }
+    };
 
     selector = (
         state: ReduxFormState<TFields>,
@@ -196,7 +225,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         }
 
         return state.selectorResultCache;
-    }
+    };
 
     /** Calculate non-cached form state selection result */
     private selectorCore = (
@@ -326,7 +355,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
 
             return formInfo;
         }
-    }
+    };
 
     private areSelectorResultsEqual = (
         r1: ValidFormInfo<TFields> | InvalidFormInfo<TFields>,
@@ -350,7 +379,7 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
         }
 
         return true;
-    }
+    };
 }
 
 function areFieldsEqual(f1: FieldInfo | null | undefined, f2: FieldInfo | null | undefined): boolean {
