@@ -18,7 +18,8 @@ export interface FormActions<TFields, TMeta = undefined> {
      */
     setData(data: Partial<TFields>, resetState?: boolean, meta?: TMeta): FormSetDataAction<TFields, TMeta>;
     /**
-     * Reset the state of the given fields.
+     * Reset the touched and editing state of the given fields
+     * to default values (non touched and non editing).
      */
     resetFieldState(fields: Array<keyof TFields>, meta?: TMeta): ResetFieldStateAction<TFields, TMeta>;
     /**
