@@ -67,7 +67,7 @@ export class FieldBindingConfiguration
             let timeoutId: number | undefined;
 
             return (v: any) => {
-                return new Promise((resolve) => {
+                return new Promise(resolve => {
                     if (timeoutId) {
                         clearTimeout(timeoutId);
                     }
@@ -110,10 +110,10 @@ export class FieldBindingConfiguration
             };
         } = {};
 
-        Object.keys(this.bindings).forEach((action) => {
+        Object.keys(this.bindings).forEach(action => {
             const events = this.getEventsOrDefault(action as any);
 
-            Object.keys(events).forEach((event) => {
+            Object.keys(events).forEach(event => {
                 if (!eventsMap[event]) {
                     eventsMap[event] = {};
                 }
@@ -235,7 +235,7 @@ interface EventConfig {
 }
 
 function getValueFromEvent(e: React.ChangeEvent<any> | any): any {
-    if (e !== undefined && e.currentTarget !== undefined && e.currentTarget.value !== undefined) {
+    if (e !== undefined && e !== null && e.currentTarget !== undefined && e.currentTarget.value !== undefined) {
         return e.currentTarget.value;
     }
 

@@ -165,7 +165,7 @@ var FieldBindingConfiguration = /** @class */ (function () {
 }());
 exports.FieldBindingConfiguration = FieldBindingConfiguration;
 function getValueFromEvent(e) {
-    if (e !== undefined && e.currentTarget !== undefined && e.currentTarget.value !== undefined) {
+    if (e !== undefined && e !== null && e.currentTarget !== undefined && e.currentTarget.value !== undefined) {
         return e.currentTarget.value;
     }
     return e;
