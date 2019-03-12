@@ -12,13 +12,13 @@ exports.fields = {
         return ({
             parse: function (input) {
                 if (input === void 0) { input = ""; }
-                input = ("" + (input || "")).trim();
-                if (!input) {
+                if (input === null || input === undefined || input === "") {
                     if (required) {
                         throw new Error(errorMessage || "Value is required.");
                     }
                     return null;
                 }
+                input = ("" + (input || "")).trim();
                 var parsed = parseFloat(input);
                 if (isNaN(parsed)) {
                     throw new Error(errorMessage || "Value is not a valid number");
@@ -45,13 +45,13 @@ exports.fields = {
             },
             parse: function (input) {
                 if (input === void 0) { input = ""; }
-                input = ("" + (input || "")).trim();
-                if (!input) {
+                if (input === null || input === undefined || input === "") {
                     if (required) {
                         throw new Error(errorMessage || "Value is required.");
                     }
                     return null;
                 }
+                input = ("" + (input || "")).trim();
                 var parsed = parseInt(input, 10);
                 if (isNaN(parsed)) {
                     throw new Error(errorMessage || "Value is not a valid number");

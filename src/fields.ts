@@ -12,15 +12,15 @@ export const fields = {
         errorMessage?: string
     ): FieldConfiguration<number | null> => ({
         parse(input: string = ""): number | null {
-            input = `${input || ""}`.trim();
-
-            if (!input) {
+            if (input === null || input === undefined || input === "") {
                 if (required) {
                     throw new Error(errorMessage || "Value is required.");
                 }
 
                 return null;
             }
+
+            input = `${input || ""}`.trim();
 
             const parsed = parseFloat(input);
             if (isNaN(parsed)) {
@@ -47,15 +47,15 @@ export const fields = {
             return value.toFixed(0);
         },
         parse(input: string = ""): number | null {
-            input = `${input || ""}`.trim();
-
-            if (!input) {
+            if (input === null || input === undefined || input === "") {
                 if (required) {
                     throw new Error(errorMessage || "Value is required.");
                 }
 
                 return null;
             }
+
+            input = `${input || ""}`.trim();
 
             const parsed = parseInt(input, 10);
             if (isNaN(parsed)) {
@@ -66,7 +66,7 @@ export const fields = {
         }
     }),
     string: (required: boolean = true, errorMessage?: string): FieldConfiguration<string | null> => ({
-        formatForDisplay: (value) => value || "",
+        formatForDisplay: value => value || "",
         parse(input: string = ""): string {
             input = input || "";
 
