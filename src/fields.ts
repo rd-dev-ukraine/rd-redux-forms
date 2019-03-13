@@ -20,6 +20,10 @@ export const fields = {
                 return null;
             }
 
+            if (typeof input === "number") {
+                return input;
+            }
+
             input = `${input || ""}`.trim();
 
             const parsed = parseFloat(input);
@@ -53,6 +57,10 @@ export const fields = {
                 }
 
                 return null;
+            }
+
+            if (typeof input === "number") {
+                return input;
             }
 
             input = `${input || ""}`.trim();

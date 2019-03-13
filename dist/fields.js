@@ -18,6 +18,9 @@ exports.fields = {
                     }
                     return null;
                 }
+                if (typeof input === "number") {
+                    return input;
+                }
                 input = ("" + (input || "")).trim();
                 var parsed = parseFloat(input);
                 if (isNaN(parsed)) {
@@ -50,6 +53,9 @@ exports.fields = {
                         throw new Error(errorMessage || "Value is required.");
                     }
                     return null;
+                }
+                if (typeof input === "number") {
+                    return input;
                 }
                 input = ("" + (input || "")).trim();
                 var parsed = parseInt(input, 10);
