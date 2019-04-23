@@ -46,13 +46,14 @@ export class FormActionsImpl<TFields, TMeta = undefined> implements FormActions<
     setData = (
         data: Partial<TFields>,
         resetState: boolean = false,
-        meta: TMeta = undefined as any
+        meta: TMeta = undefined as any,
+        mergeData: boolean = false
     ): FormSetDataAction<TFields, TMeta> => {
         if (!data) {
             throw new Error("Data is not defined.");
         }
 
-        return { data, form: this.title, meta, resetState, type: this.types.SET_DATA };
+        return { data, form: this.title, meta, resetState, type: this.types.SET_DATA, mergeData: mergeData || false };
     };
 
     /**

@@ -95,7 +95,12 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
                 ...(state as any),
                 editing: action.resetState ? {} : state.editing,
                 errors: action.resetState ? undefined : state.errors,
-                fields: action.data,
+                fields: action.mergeData
+                    ? {
+                          ...((state.fields as any) || {}),
+                          ...(action.data as any)
+                      }
+                    : action.data,
                 touched: action.resetState ? {} : state.touched,
                 validated: action.resetState ? false : state.validated
             };

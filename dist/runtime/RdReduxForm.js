@@ -69,7 +69,8 @@ var RdReduxFormImpl = /** @class */ (function () {
             var _a, _b, _c, _d;
             state = state || _this.state.empty();
             if (_this.actions.isSetData(action)) {
-                return __assign({}, state, { editing: action.resetState ? {} : state.editing, errors: action.resetState ? undefined : state.errors, fields: action.data, touched: action.resetState ? {} : state.touched, validated: action.resetState ? false : state.validated });
+                return __assign({}, state, { editing: action.resetState ? {} : state.editing, errors: action.resetState ? undefined : state.errors, fields: action.mergeData
+                        ? __assign({}, (state.fields || {}), action.data) : action.data, touched: action.resetState ? {} : state.touched, validated: action.resetState ? false : state.validated });
             }
             if (_this.actions.isResetFieldState(action)) {
                 if (!action.fields || !action.fields.length) {

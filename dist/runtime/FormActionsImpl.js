@@ -25,13 +25,14 @@ var FormActionsImpl = /** @class */ (function () {
             }
             return { field: field, form: _this.title, meta: meta, type: _this.types.FIELD_END_EDITING };
         };
-        this.setData = function (data, resetState, meta) {
+        this.setData = function (data, resetState, meta, mergeData) {
             if (resetState === void 0) { resetState = false; }
             if (meta === void 0) { meta = undefined; }
+            if (mergeData === void 0) { mergeData = false; }
             if (!data) {
                 throw new Error("Data is not defined.");
             }
-            return { data: data, form: _this.title, meta: meta, resetState: resetState, type: _this.types.SET_DATA };
+            return { data: data, form: _this.title, meta: meta, resetState: resetState, type: _this.types.SET_DATA, mergeData: mergeData || false };
         };
         /**
          * Sets the values for the selected fields and optionally resets state for provided fields only.

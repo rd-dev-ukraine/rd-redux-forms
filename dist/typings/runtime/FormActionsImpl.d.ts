@@ -6,7 +6,7 @@ export declare class FormActionsImpl<TFields, TMeta = undefined> implements Form
     fieldEdit: (field: keyof TFields, value: any, meta?: TMeta) => FieldEditAction<TFields, TMeta>;
     fieldStartEditing: (field: keyof TFields, meta?: TMeta) => FieldStartEditingAction<TFields, TMeta>;
     fieldEndEditing: (field: keyof TFields, meta?: TMeta) => FieldEndEditingAction<TFields, TMeta>;
-    setData: (data: Partial<TFields>, resetState?: boolean, meta?: TMeta) => FormSetDataAction<TFields, TMeta>;
+    setData: (data: Partial<TFields>, resetState?: boolean, meta?: TMeta, mergeData?: boolean) => FormSetDataAction<TFields, TMeta>;
     /**
      * Sets the values for the selected fields and optionally resets state for provided fields only.
      */
