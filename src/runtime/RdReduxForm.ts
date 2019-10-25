@@ -9,12 +9,14 @@ import {
     RdReduxForm,
     ReduxFormState,
     ValidFieldInfo,
-    ValidFormInfo
+    ValidFormInfo,
+    RdReduxDetachedForm
 } from "../api";
-import { FormBindings } from "../bindings";
+import { FormBindings, BindingFactory } from "../bindings";
 import { shallowCompareArrays, shallowCompareObjectsWithSameProps } from "../utils";
 import { FormActionsImpl } from "./FormActionsImpl";
 import { CalculateVisualStateStrategies } from "./VisualStateCalc";
+import { RdReduxDetachedFormImpl } from "./RdReduxDetachedForm";
 
 let formCounter = 0;
 
@@ -231,6 +233,10 @@ export class RdReduxFormImpl<TFields, TMeta> implements RdReduxForm<TFields, TMe
 
         return state.selectorResultCache;
     };
+
+    createInstance(bindings: BindingFactory<TFields, TMeta>): RdReduxDetachedForm<TFields> {
+        return new RdReduxDetachedFormImpl(this, bindings);
+    }
 
     /** Calculate non-cached form state selection result */
     private selectorCore = (

@@ -1,8 +1,8 @@
 import { Action } from "redux";
 
-import { FormBindings } from "../bindings";
+import { FormBindings, BindingFactory } from "../bindings";
 import { FormActions } from "./actions";
-import { InvalidFormInfo, ReduxFormState, ValidFormInfo } from "./common";
+import { InvalidFormInfo, ReduxFormState, ValidFormInfo, FieldInfo } from "./common";
 
 /**
  * rd-redux-forms object describes a form.
@@ -60,4 +60,14 @@ export interface RdReduxForm<TFields, TMeta> {
         selectorResult: ValidFormInfo<TFields> | InvalidFormInfo<TFields>;
         eventBindings: FormBindings<TFields>;
     };
+
+    createInstance(bindings: BindingFactory<TFields, TMeta>): RdReduxDetachedForm<TFields>;
 }
+
+export interface RdReduxDetachedForm<TFields> {}
+
+export type DetachedFormFields<TFields> = {
+    [TField in keyof TFields]: FieldInfo & {
+        props: any;
+    };
+};
